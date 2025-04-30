@@ -1,0 +1,47 @@
+{
+	"name": "jjpeleato/ps-admin-panel-legacy",
+	"description": "PrestaShop module that adds an admin panel to the back office, allowing easy configuration of different types of fields.",
+	"keywords": [
+		"php",
+		"prestashop",
+		"psr1",
+		"psr2",
+		"psr12"
+	],
+	"homepage": "https://github.com/jjpeleato/ps-admin-panel-legacy.git",
+	"license": "GPL-2.0",
+	"authors": [
+		{
+			"name": "@jjpeleato",
+			"homepage": "https://jjpeleato.com/"
+		}
+	],
+	"require": {
+		"php": "^8.1",
+		"ext-json": "*"
+	},
+	"require-dev": {
+		"dealerdirect/phpcodesniffer-composer-installer": "^1.0",
+		"roave/security-advisories": "dev-latest",
+		"slevomat/coding-standard": "^8.15.0",
+		"squizlabs/php_codesniffer": "^3.9"
+	},
+	"config": {
+		"process-timeout": 0,
+		"optimize-autoloader": true,
+		"sort-packages": true,
+		"allow-plugins": {
+			"dealerdirect/phpcodesniffer-composer-installer": true
+		}
+	},
+	"scripts": {
+		"cs": "phpcs",
+		"cs:fix": "phpcbf"
+	},
+	"extra": {
+		"scripts-description": {
+			"cs": "Run phpcodesniffer",
+			"cs:fix": "Run phpcodesniffer beautifier"
+		}
+	}
+}
