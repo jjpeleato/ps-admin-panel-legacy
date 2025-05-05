@@ -1,20 +1,23 @@
 # PrestaShop: Admin panel (legacy)
 
-PrestaShop module (legacy version) that adds an admin panel to the back office, allowing easy configuration of different types of fields. 
+PrestaShop module (legacy version) that adds an admin panel to the back office, allowing easy configuration of different types of fields.
 
-### Installing
-
-~
-
-### Installing dependencies
-
-~
+https://devdocs.prestashop-project.org/1.7/modules/creation/adding-configuration-page/
+https://devdocs.prestashop-project.org/8/modules/creation/adding-configuration-page/
 
 ### Project skeleton
 
 ```
 ~
 ```
+
+### Installing dependencies
+
+~
+
+### Installing
+
+~
 
 ### Technologies and tools
 
