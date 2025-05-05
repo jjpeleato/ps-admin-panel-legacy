@@ -50,6 +50,13 @@ class Ps_Admin_Panel_Legacy extends Module implements WidgetInterface
     /** @var string $domain */
     private string $domain = 'Modules.Psadminpanellegacy.Admin';
 
+    /** @var array $fields */
+    private array $fields = [
+        'PS_ADMIN_PANEL_LEGACY_TITLE' => '',
+        'PS_ADMIN_PANEL_LEGACY_SHORT_DESCRIPTION' => '',
+        'PS_ADMIN_PANEL_LEGACY_DESCRIPTION' => '',
+    ];
+
     /**
      * Ps_Admin_Panel_Legacy constructor.
      */
@@ -57,7 +64,7 @@ class Ps_Admin_Panel_Legacy extends Module implements WidgetInterface
     {
         $this->name = 'ps_admin_panel_legacy';
         $this->tab = 'front_office_features';
-        $this->version = '1.0.0';
+        $this->version = '0.1.0';
         $this->author = '@jjpeleato';
         $this->author_uri = 'https://www.jjpeleato.com/';
         $this->need_instance = 0;
@@ -96,7 +103,61 @@ class Ps_Admin_Panel_Legacy extends Module implements WidgetInterface
      */
     public function install(): bool
     {
-        return parent::install();
+        return parent::install() &&
+            $this->installShopFixtures();
+    }
+
+    /**
+     * This method is used to install the module fixtures.
+     * It is called when the module is installed.
+     *
+     * @return bool
+     */
+    private function installShopFixtures(): bool
+    {
+        $shops = Shop::getShops();
+        $languages = Language::getLanguages(false);
+
+        foreach ($shops as $shop) {
+            $idShopGroup = (int) $shop['id_shop_group'];
+            $idShop = (int) $shop['id_shop'];
+
+            foreach ($languages as $lang) {
+                $idLang = (int) $lang['id_lang'];
+
+                if (!$this->installLanguageFixture($idLang, $idShopGroup, $idShop)) {
+                    return false;
+                }
+            }
+        }
+
+        PrestaShopLogger::addLog("Installed module: $this->name", 1);
+
+        return true;
+    }
+
+    /**
+     * This method is used to install a fixture for the module.
+     * It is called when the module is installed.
+     *
+     * @param int $idLang
+     * @param int $idShopGroup
+     * @param int $idShop
+     */
+    private function installLanguageFixture(int $idLang, int $idShopGroup, int $idShop): bool
+    {
+        foreach ($this->fields as $key => $field) {
+            if (!Configuration::updateValue($key, [$idLang => $field], false, $idShopGroup, $idShop)) {
+                PrestaShopLogger::addLog(
+                    "Failed to update configuration key: $key for shop $idShop and language $idLang",
+                    3
+                );
+
+                return false;
+            }
+        }
+
+        return true;
     }
 
     /**
@@ -109,6 +170,16 @@ class Ps_Admin_Panel_Legacy extends Module implements WidgetInterface
      */
     public function uninstall(): bool
     {
+        $this->_clearCache('*'); // Clear module cache
+
+        foreach (array_keys($this->fields) as $field) {
+            if (!Configuration::deleteByName($field)) {
+                return false; // Stop if any deletion fails
+            }
+        }
+
+        PrestaShopLogger::addLog("Uninstalled module: $this->name", 1);
+
         return parent::uninstall();
     }
 
