@@ -209,7 +209,7 @@ class Ps_Admin_Panel_Legacy extends Module implements WidgetInterface
         /**
          * Render all templates.
          */
-        $renderTemplate = $this->context->smarty->fetch($this->local_path . 'views/templates/admin/index.tpl');
+        $renderTemplate = $this->context->smarty->fetch('module:ps_admin_panel_legacy/views/templates/admin/index.tpl');
 
         return $output . $this->renderForm() . $renderTemplate;
     }
@@ -381,7 +381,13 @@ class Ps_Admin_Panel_Legacy extends Module implements WidgetInterface
      */
     public function renderWidget($hookName, array $configuration): string
     {
-        return '';
+        $variables = $this->getWidgetVariables($hookName, $configuration);
+        if (true === empty($variables)) {
+            return '';
+        }
+
+        $this->context->smarty->assign($variables);
+        return $this->fetch('module:ps_admin_panel_legacy/views/templates/widget/index.tpl');
     }
 
     /**
@@ -396,6 +402,13 @@ class Ps_Admin_Panel_Legacy extends Module implements WidgetInterface
      */
     public function getWidgetVariables($hookName, array $configuration): array
     {
-        return [];
+        $variables = [];
+        $idLang = $this->context->language->id;
+
+        foreach (array_keys($this->fields) as $key) {
+            $variables[$key] = Configuration::get($key, $idLang);
+        }
+
+        return $variables;
     }
 }
