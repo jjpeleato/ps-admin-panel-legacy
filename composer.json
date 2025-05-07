@@ -9,7 +9,7 @@
 		"psr12"
 	],
 	"homepage": "https://github.com/jjpeleato/ps-admin-panel-legacy.git",
-	"license": "GPL-2.0",
+	"license": "GPL-3.0-only",
 	"authors": [
 		{
 			"name": "@jjpeleato",
