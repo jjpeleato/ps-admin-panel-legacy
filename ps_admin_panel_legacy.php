@@ -322,7 +322,7 @@ class Ps_Admin_Panel_Legacy extends Module implements WidgetInterface
         foreach ($this->languages as $lang) {
             $idLang = (int) $lang['id_lang'];
 
-            foreach ($this->fields as $key => $value) {
+            foreach (array_keys($this->fields) as $key) {
                 $fields[$key][$idLang] = Tools::getValue(
                     $key . '_' . $idLang,
                     Configuration::get($key, $idLang)
@@ -342,23 +342,13 @@ class Ps_Admin_Panel_Legacy extends Module implements WidgetInterface
     private function postProcess(): string
     {
         $values = [];
+        foreach (array_keys($this->fields) as $key) {
+            foreach ($this->languages as $lang) {
+                $values[$key][$lang['id_lang']] = Tools::getValue($key . '_' . $lang['id_lang']);
+            }
 
-        foreach ($this->languages as $lang) {
-            $values['PS_ADMIN_PANEL_LEGACY_TITLE'][$lang['id_lang']] = Tools::getValue(
-                'PS_ADMIN_PANEL_LEGACY_TITLE_' . $lang['id_lang']
-            );
-            $values['PS_ADMIN_PANEL_LEGACY_SHORT_DESCRIPTION'][$lang['id_lang']] = Tools::getValue(
-                'PS_ADMIN_PANEL_LEGACY_SHORT_DESCRIPTION_' . $lang['id_lang']
-            );
-            $values['PS_ADMIN_PANEL_LEGACY_DESCRIPTION'][$lang['id_lang']] = Tools::getValue(
-                'PS_ADMIN_PANEL_LEGACY_DESCRIPTION_' . $lang['id_lang']
-            );
+            Configuration::updateValue($key, $values[$key], true);
         }
-
-        // Update the configuration value for each language.
-        Configuration::updateValue('PS_ADMIN_PANEL_LEGACY_TITLE', $values['PS_ADMIN_PANEL_LEGACY_TITLE']);
-        Configuration::updateValue('PS_ADMIN_PANEL_LEGACY_SHORT_DESCRIPTION', $values['PS_ADMIN_PANEL_LEGACY_SHORT_DESCRIPTION'], true);
-        Configuration::updateValue('PS_ADMIN_PANEL_LEGACY_DESCRIPTION', $values['PS_ADMIN_PANEL_LEGACY_DESCRIPTION'], true);
 
         // Clear the cache after updating the configuration.
         $this->_clearCache('*');
