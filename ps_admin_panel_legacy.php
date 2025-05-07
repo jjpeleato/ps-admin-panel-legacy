@@ -14,7 +14,7 @@
  * @see       https://devdocs.prestashop-project.org/8/modules/creation/adding-configuration-page/
  */
 
- declare(strict_types=1);
+declare(strict_types=1);
 
 // phpcs:disable
 /**
@@ -46,11 +46,7 @@ class Ps_Admin_Panel_Legacy extends Module implements WidgetInterface
     private string $domain = 'Modules.Psadminpanellegacy.Admin';
 
     /** @var array $fields */
-    private array $fields = [
-        'PS_ADMIN_PANEL_LEGACY_TITLE' => '',
-        'PS_ADMIN_PANEL_LEGACY_SHORT_DESCRIPTION' => '',
-        'PS_ADMIN_PANEL_LEGACY_DESCRIPTION' => '',
-    ];
+    private array $fields = [];
 
     /**
      * Ps_Admin_Panel_Legacy constructor.
@@ -77,6 +73,34 @@ class Ps_Admin_Panel_Legacy extends Module implements WidgetInterface
             $this->domain
         );
         $this->confirmUninstall = $this->trans('Are you sure you want to uninstall?', [], $this->domain);
+
+        // Set the module's configuration fields.
+        $this->fields = [
+            'PS_ADMIN_PANEL_LEGACY_TITLE' => [
+                'machine_name' => 'title',
+                'type' => 'text',
+                'lang' => true,
+                'label' => $this->trans('Title', [], $this->domain),
+                'desc' => $this->trans('Write a title for the section.', [], $this->domain),
+                'value' => '',
+            ],
+            'PS_ADMIN_PANEL_LEGACY_SHORT_DESCRIPTION' => [
+                'machine_name' => 'short_description',
+                'type' => 'html',
+                'lang' => true,
+                'label' => $this->trans('Short description', [], $this->domain),
+                'desc' => $this->trans('Write a short description for the section.', [], $this->domain),
+                'value' => '',
+            ],
+            'PS_ADMIN_PANEL_LEGACY_DESCRIPTION' => [
+                'machine_name' => 'description',
+                'type' => 'html',
+                'lang' => true,
+                'label' => $this->trans('Description', [], $this->domain),
+                'desc' => $this->trans('Write a description for the section.', [], $this->domain),
+                'value' => '',
+            ],
+        ];
 
         parent::__construct();
     }
@@ -141,7 +165,7 @@ class Ps_Admin_Panel_Legacy extends Module implements WidgetInterface
     private function installLanguageFixture(int $idLang, int $idShopGroup, int $idShop): bool
     {
         foreach ($this->fields as $key => $field) {
-            if (!Configuration::updateValue($key, [$idLang => $field], false, $idShopGroup, $idShop)) {
+            if (!Configuration::updateValue($key, [$idLang => $field['value']], false, $idShopGroup, $idShop)) {
                 PrestaShopLogger::addLog(
                     "Failed to update configuration key: $key for shop $idShop and language $idLang",
                     3
@@ -256,47 +280,43 @@ class Ps_Admin_Panel_Legacy extends Module implements WidgetInterface
      */
     private function getConfigForm(): array
     {
-        return [
+        $form = [
             'form' => [
                 'tinymce' => true,
                 'legend' => [
                     'title' => $this->trans('Settings', [], $this->domain),
                     'icon' => 'icon-cogs'
                 ],
-                'input' => [
-                    'title' => [
-                        'type' => 'text',
-                        'lang' => true,
-                        'label' => $this->trans('Title', [], $this->domain),
-                        'name' => 'PS_ADMIN_PANEL_LEGACY_TITLE',
-                        'desc' => $this->trans('Lorem ipsum dolor sit amet.', [], $this->domain)
-                    ],
-                    'short_description' => [
-                        'type' => 'textarea',
-                        'lang' => true,
-                        'label' => $this->trans('Short description', [], $this->domain),
-                        'name' => 'PS_ADMIN_PANEL_LEGACY_SHORT_DESCRIPTION',
-                        'cols' => 40,
-                        'rows' => 40,
-                        'class' => 'rte',
-                        'autoload_rte' => true,
-                    ],
-                    'description' => [
-                        'type' => 'textarea',
-                        'lang' => true,
-                        'label' => $this->trans('Description', [], $this->domain),
-                        'name' => 'PS_ADMIN_PANEL_LEGACY_DESCRIPTION',
-                        'cols' => 40,
-                        'rows' => 40,
-                        'class' => 'rte',
-                        'autoload_rte' => true,
-                    ],
-                ],
                 'submit' => [
                     'title' => $this->trans('Save', [], $this->domain),
                 ],
             ],
         ];
+
+        // Add fields to the form.
+        foreach ($this->fields as $key => $field) {
+            $form['form']['input'][$field['machine_name']] = [
+                'lang' => $field['lang'],
+                'label' => $field['label'],
+                'name' => $key,
+                'desc' => $field['desc'],
+            ];
+
+            if ($field['type'] === 'text') {
+                $form['form']['input'][$field['machine_name']]['type'] = 'text';
+            }
+
+            if ($field['type'] === 'html') {
+                $form['form']['input'][$field['machine_name']]['type'] = 'textarea';
+                $form['form']['input'][$field['machine_name']]['autoload_rte'] = true;
+                $form['form']['input'][$field['machine_name']]['cols'] = 75;
+                $form['form']['input'][$field['machine_name']]['rows'] = 75;
+                $form['form']['input'][$field['machine_name']]['class'] = 'rte';
+                $form['form']['input'][$field['machine_name']]['autoload_rte'] = true;
+            }
+        }
+
+        return $form;
     }
 
     /**
@@ -405,8 +425,8 @@ class Ps_Admin_Panel_Legacy extends Module implements WidgetInterface
         $variables = [];
         $idLang = $this->context->language->id;
 
-        foreach (array_keys($this->fields) as $key) {
-            $variables[$key] = Configuration::get($key, $idLang);
+        foreach ($this->fields as $key => $field) {
+            $variables[$field['machine_name']] = Configuration::get($key, $idLang);
         }
 
         return $variables;

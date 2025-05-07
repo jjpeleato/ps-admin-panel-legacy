@@ -22,15 +22,15 @@
 *  @license    http://opensource.org/licenses/afl-3.0.php  Academic Free License (AFL 3.0)
 *  International Registered Trademark & Property of PrestaShop SA
 *}
-<div class="js-admin-panel-legacy container">
+<div class="container">
   <div class="row">
     <div class="col-12">
-      <h3>{$PS_ADMIN_PANEL_LEGACY_TITLE}</h3>
-      <div class="short-description">
-        {$PS_ADMIN_PANEL_LEGACY_SHORT_DESCRIPTION nofilter}
+      <h3>{$title}</h3>
+      <div class="description">
+        {$short_description nofilter}
       </div>
       <div class="description">
-        {$PS_ADMIN_PANEL_LEGACY_DESCRIPTION nofilter}
+        {$description nofilter}
       </div>
     </div>
   </div>
