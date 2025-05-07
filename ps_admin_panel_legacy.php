@@ -86,7 +86,6 @@ class Ps_Admin_Panel_Legacy extends Module implements WidgetInterface
             $this->domain
         );
         $this->confirmUninstall = $this->trans('Are you sure you want to uninstall?', [], $this->domain);
-
         $this->shops = Shop::getShops();
         $this->languages = Language::getLanguages(false);
 
@@ -331,8 +330,6 @@ class Ps_Admin_Panel_Legacy extends Module implements WidgetInterface
             }
         }
 
-        $fields['is_default'] = Tools::getValue('is_default', 0);
-
         return $fields;
     }
 
@@ -344,43 +341,27 @@ class Ps_Admin_Panel_Legacy extends Module implements WidgetInterface
      */
     private function postProcess(): string
     {
-        $errors = [];
+        $values = [];
 
-        foreach ($this->fields as $key => $value) {
-            $data = [];
-
-            foreach ($this->languages as $lang) {
-                $idLang = (int) $lang['id_lang'];
-                $data[$key][$idLang] = Tools::getValue($key . '_' . $idLang);
-            }
-
-            // Update the configuration value for each language.
-            $success = Configuration::updateValue(
-                $key,
-                $data,
-                true
+        foreach ($this->languages as $lang) {
+            $values['PS_ADMIN_PANEL_LEGACY_TITLE'][$lang['id_lang']] = Tools::getValue(
+                'PS_ADMIN_PANEL_LEGACY_TITLE_' . $lang['id_lang']
             );
-
-            // If the update fails, add an error message.
-            if (!$success) {
-                $errors[] = $this->trans(
-                    'Failed to save the value for "%key%" in language ID %idLang%.',
-                    [
-                        '%key%' => $key,
-                        '%idLang%' => $idLang
-                    ],
-                    $this->domain
-                );
-            }
+            $values['PS_ADMIN_PANEL_LEGACY_SHORT_DESCRIPTION'][$lang['id_lang']] = Tools::getValue(
+                'PS_ADMIN_PANEL_LEGACY_SHORT_DESCRIPTION_' . $lang['id_lang']
+            );
+            $values['PS_ADMIN_PANEL_LEGACY_DESCRIPTION'][$lang['id_lang']] = Tools::getValue(
+                'PS_ADMIN_PANEL_LEGACY_DESCRIPTION_' . $lang['id_lang']
+            );
         }
+
+        // Update the configuration value for each language.
+        Configuration::updateValue('PS_ADMIN_PANEL_LEGACY_TITLE', $values['PS_ADMIN_PANEL_LEGACY_TITLE']);
+        Configuration::updateValue('PS_ADMIN_PANEL_LEGACY_SHORT_DESCRIPTION', $values['PS_ADMIN_PANEL_LEGACY_SHORT_DESCRIPTION'], true);
+        Configuration::updateValue('PS_ADMIN_PANEL_LEGACY_DESCRIPTION', $values['PS_ADMIN_PANEL_LEGACY_DESCRIPTION'], true);
 
         // Clear the cache after updating the configuration.
         $this->_clearCache('*');
-
-        // If there are errors, display them.
-        if (!empty($errors)) {
-            return $this->displayError(implode('<br>', $errors));
-        }
 
         // If everything is successful, display a success message.
         return $this->displayConfirmation(
