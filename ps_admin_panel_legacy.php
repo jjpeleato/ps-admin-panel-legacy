@@ -68,6 +68,8 @@ class Ps_Admin_Panel_Legacy extends Module implements WidgetInterface
      */
     public function __construct()
     {
+        $this->shops = Shop::getShops();
+        $this->languages = Language::getLanguages(false);
         $this->name = 'ps_admin_panel_legacy';
         $this->tab = 'front_office_features';
         $this->version = '0.1.0';
@@ -86,8 +88,6 @@ class Ps_Admin_Panel_Legacy extends Module implements WidgetInterface
             $this->domain
         );
         $this->confirmUninstall = $this->trans('Are you sure you want to uninstall?', [], $this->domain);
-        $this->shops = Shop::getShops();
-        $this->languages = Language::getLanguages(false);
 
         parent::__construct();
     }
@@ -342,16 +342,37 @@ class Ps_Admin_Panel_Legacy extends Module implements WidgetInterface
     private function postProcess(): string
     {
         $values = [];
+        $errors = [];
+
         foreach (array_keys($this->fields) as $key) {
             foreach ($this->languages as $lang) {
                 $values[$key][$lang['id_lang']] = Tools::getValue($key . '_' . $lang['id_lang']);
             }
 
-            Configuration::updateValue($key, $values[$key], true);
+            if (!Configuration::updateValue($key, $values[$key], true)) {
+                $errors[] = $this->trans(
+                    'Failed to update configuration for key "%key%".',
+                    [
+                        '%key%' => $key
+                    ],
+                    $this->domain
+                );
+            }
         }
 
         // Clear the cache after updating the configuration.
         $this->_clearCache('*');
+
+        // If there are errors, display them.
+        if (!empty($errors)) {
+            foreach ($errors as $error) {
+                PrestaShopLogger::addLog($error, 3);
+            }
+
+            return $this->displayError(
+                $this->trans('Some settings could not be updated. Please check the logs for more details.', [], $this->domain)
+            );
+        }
 
         // If everything is successful, display a success message.
         return $this->displayConfirmation(
