@@ -80,6 +80,7 @@ class Ps_Admin_Panel_Legacy extends Module implements WidgetInterface
                 'machine_name' => 'title',
                 'type' => 'text',
                 'lang' => true,
+                'required' => true,
                 'label' => $this->trans('Title', [], $this->domain),
                 'desc' => $this->trans('Write a title for the section.', [], $this->domain),
                 'value' => '',
@@ -88,6 +89,7 @@ class Ps_Admin_Panel_Legacy extends Module implements WidgetInterface
                 'machine_name' => 'short_description',
                 'type' => 'html',
                 'lang' => true,
+                'required' => false,
                 'label' => $this->trans('Short description', [], $this->domain),
                 'desc' => $this->trans('Write a short description for the section.', [], $this->domain),
                 'value' => '',
@@ -96,8 +98,18 @@ class Ps_Admin_Panel_Legacy extends Module implements WidgetInterface
                 'machine_name' => 'description',
                 'type' => 'html',
                 'lang' => true,
+                'required' => false,
                 'label' => $this->trans('Description', [], $this->domain),
                 'desc' => $this->trans('Write a description for the section.', [], $this->domain),
+                'value' => '',
+            ],
+            'PS_ADMIN_PANEL_LEGACY_IMAGE' => [
+                'machine_name' => 'image',
+                'type' => 'image',
+                'lang' => true,
+                'required' => false,
+                'label' => $this->trans('Image', [], $this->domain),
+                'desc' => $this->trans('Upload an image for the section.', [], $this->domain),
                 'value' => '',
             ],
         ];
@@ -162,7 +174,7 @@ class Ps_Admin_Panel_Legacy extends Module implements WidgetInterface
      * @param int $idShopGroup
      * @param int $idShop
      */
-    private function installLanguageFixture(int $idLang, int $idShopGroup, int $idShop): bool
+    private function installLanguageFixture(int $idLang = 0, int $idShopGroup = 0, int $idShop = 0): bool
     {
         foreach ($this->fields as $key => $field) {
             if (!Configuration::updateValue($key, [$idLang => $field['value']], false, $idShopGroup, $idShop)) {
@@ -190,6 +202,7 @@ class Ps_Admin_Panel_Legacy extends Module implements WidgetInterface
     {
         $this->_clearCache('*'); // Clear module cache
 
+        // TODO: Delete all images in the images folder.
         foreach (array_keys($this->fields) as $field) {
             if (!Configuration::deleteByName($field)) {
                 return false; // Stop if any deletion fails
@@ -266,7 +279,12 @@ class Ps_Admin_Panel_Legacy extends Module implements WidgetInterface
         $helper->submit_action = 'submit_' . $this->name;
 
         // Load current value into the form.
-        $helper->fields_value = $this->getConfigFieldsValues();
+        $helper->tpl_vars = [
+            'uri' => $this->getPathUri(),
+            'fields_value' => $this->getConfigFieldsValues(),
+            'languages' => $this->context->controller->getLanguages(),
+            'id_language' => $this->context->language->id,
+        ];
 
         return $helper->generateForm([$this->getConfigForm()]);
     }
@@ -296,15 +314,13 @@ class Ps_Admin_Panel_Legacy extends Module implements WidgetInterface
         // Add fields to the form.
         foreach ($this->fields as $key => $field) {
             $form['form']['input'][$field['machine_name']] = [
+                'type' => $field['type'],
                 'lang' => $field['lang'],
+                'required' => $field['required'],
                 'label' => $field['label'],
                 'name' => $key,
                 'desc' => $field['desc'],
             ];
-
-            if ($field['type'] === 'text') {
-                $form['form']['input'][$field['machine_name']]['type'] = 'text';
-            }
 
             if ($field['type'] === 'html') {
                 $form['form']['input'][$field['machine_name']]['type'] = 'textarea';
@@ -313,6 +329,10 @@ class Ps_Admin_Panel_Legacy extends Module implements WidgetInterface
                 $form['form']['input'][$field['machine_name']]['rows'] = 75;
                 $form['form']['input'][$field['machine_name']]['class'] = 'rte';
                 $form['form']['input'][$field['machine_name']]['autoload_rte'] = true;
+            }
+
+            if ($field['type'] === 'image') {
+                $form['form']['input'][$field['machine_name']]['type'] = 'file_lang';
             }
         }
 
@@ -353,9 +373,22 @@ class Ps_Admin_Panel_Legacy extends Module implements WidgetInterface
         $values = [];
         $errors = [];
 
-        foreach (array_keys($this->fields) as $key) {
+        foreach ($this->fields as $key => $field) {
             foreach ($this->languages as $lang) {
-                $values[$key][$lang['id_lang']] = Tools::getValue($key . '_' . $lang['id_lang']);
+                if ($field['type'] === 'image') {
+                    $action = $this->upload($key, (int) $lang['id_lang']);
+                    $values[$key][$lang['id_lang']] = $action;
+
+                    if ($action === '') {
+                        $errors[] = $this->trans(
+                            'An error occurred while attempting to upload the file.',
+                            [],
+                            $this->domain
+                        );
+                    }
+                } else {
+                    $values[$key][$lang['id_lang']] = Tools::getValue($key . '_' . $lang['id_lang']);
+                }
             }
 
             if (!Configuration::updateValue($key, $values[$key], true)) {
@@ -390,6 +423,65 @@ class Ps_Admin_Panel_Legacy extends Module implements WidgetInterface
     }
 
     /**
+     * This method is used to upload an image.
+     * It is called when the form is submitted.
+     *
+     * @param string $key
+     * @param int $lang
+     *
+     * @return string
+     */
+    private function upload(string $key = '', int $lang = 0): string
+    {
+        if (
+            isset($_FILES[$key . '_' . $lang])
+            && isset($_FILES[$key . '_' . $lang]['tmp_name'])
+            && !empty($_FILES[$key . '_' . $lang]['tmp_name'])
+        ) {
+            if ($error = ImageManager::validateUpload($_FILES[$key . '_' . $lang], 4000000)) {
+                PrestaShopLogger::addLog($error, 3);
+                return '';
+            }
+
+            $ext = substr(
+                $_FILES[$key . '_' . $lang]['name'],
+                strrpos($_FILES[$key . '_' . $lang]['name'], '.') + 1
+            );
+            $file = md5($_FILES[$key . '_' . $lang]['name']) . '.' . $ext;
+
+            if (
+                false === move_uploaded_file(
+                    $_FILES[$key . '_' . $lang]['tmp_name'],
+                    dirname(__FILE__) . DIRECTORY_SEPARATOR . 'images' . DIRECTORY_SEPARATOR . $file
+                )
+            ) {
+                PrestaShopLogger::addLog(
+                    $this->trans('An error occurred while attempting to upload the file.', [], $this->domain),
+                    3
+                );
+                return '';
+            }
+
+            // Delete old image.
+            if (
+                Configuration::hasContext($key, $lang, Shop::getContext())
+                && Configuration::get($key, $lang) != $file
+            ) {
+                @unlink(
+                    dirname(__FILE__) . DIRECTORY_SEPARATOR . 'images' . DIRECTORY_SEPARATOR . Configuration::get(
+                        $key,
+                        $lang
+                    )
+                );
+            }
+
+            return $file;
+        }
+
+        return '';
+    }
+
+    /**
      * Implement the renderWidget method.
      *
      * This method is used to render the widget.
@@ -407,6 +499,9 @@ class Ps_Admin_Panel_Legacy extends Module implements WidgetInterface
         }
 
         $this->context->smarty->assign($variables);
+        $this->smarty->assign([
+            'path' => $this->_path,
+        ]);
         return $this->fetch('module:ps_admin_panel_legacy/views/templates/widget/index.tpl');
     }
 
