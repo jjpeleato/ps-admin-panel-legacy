@@ -19,17 +19,14 @@
 {extends file="helpers/form/form.tpl"}
 
 {block name="field"}
-  {if $input.type == 'file_lang'}
+  {if $input.type == 'image_lang'}
     <div class="col-lg-8">
       <div class="form-group">
         {foreach from=$languages item=language}
           {if $languages|count > 1}
-            <div class="translatable-field lang-{$language.id_lang}" {if $language.id_lang != $defaultFormLanguage}style="display:none" {/if}>
+            <div class="translatable-field lang-{$language.id_lang}" {if $language.id_lang != $defaultFormLanguage}style="display: none;"{/if}>
           {/if}
             <div class="col-lg-{if $languages|count > 1}10{else}12{/if}">
-              {if isset($fields[0]['form']['images'])}
-                <img src="{$image_baseurl}{$fields[0]['form']['images'][$language.id_lang]}" class="img-thumbnail" />
-              {/if}
               <div class="dummyfile input-group">
                 <input id="{$input.name}_{$language.id_lang}" type="file" name="{$input.name}_{$language.id_lang}" class="hide-file-upload" />
                 <span class="input-group-addon"><i class="icon-file"></i></span>
@@ -52,6 +49,11 @@
                     <li><a href="javascript:hideOtherLanguage({$lang.id_lang});" tabindex="-1">{$lang.name}</a></li>
                   {/foreach}
                 </ul>
+              </div>
+            {/if}
+            {if isset($fields_value[$input.name][$language.id_lang]) && $fields_value[$input.name][$language.id_lang] != ''}
+              <div class="col-lg-12" style="margin-top: 10px;">
+                <img src="{$uri}images/{$fields_value[$input.name][$language.id_lang]}" class="img-thumbnail" width="200" />
               </div>
             {/if}
           {if $languages|count > 1}

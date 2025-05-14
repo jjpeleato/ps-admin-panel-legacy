@@ -202,12 +202,14 @@ class Ps_Admin_Panel_Legacy extends Module implements WidgetInterface
     {
         $this->_clearCache('*'); // Clear module cache
 
-        // TODO: Delete all images in the images folder.
         foreach (array_keys($this->fields) as $field) {
             if (!Configuration::deleteByName($field)) {
                 return false; // Stop if any deletion fails
             }
         }
+
+        // Delete all images in the images folder.
+        $this->deleteImages();
 
         PrestaShopLogger::addLog("Uninstalled module: $this->name", 1);
 
@@ -217,8 +219,10 @@ class Ps_Admin_Panel_Legacy extends Module implements WidgetInterface
     /**
      * This method is used to get the content of the module.
      * It is called when the module is displayed in the back office.
+     *
+     * @return string
      */
-    public function getContent()
+    public function getContent(): string
     {
         /**
          * If the multi-store is active, check if the store is selected
@@ -283,7 +287,6 @@ class Ps_Admin_Panel_Legacy extends Module implements WidgetInterface
             'uri' => $this->getPathUri(),
             'fields_value' => $this->getConfigFieldsValues(),
             'languages' => $this->context->controller->getLanguages(),
-            'id_language' => $this->context->language->id,
         ];
 
         return $helper->generateForm([$this->getConfigForm()]);
@@ -332,7 +335,7 @@ class Ps_Admin_Panel_Legacy extends Module implements WidgetInterface
             }
 
             if ($field['type'] === 'image') {
-                $form['form']['input'][$field['machine_name']]['type'] = 'file_lang';
+                $form['form']['input'][$field['machine_name']]['type'] = 'image_lang';
             }
         }
 
@@ -376,7 +379,7 @@ class Ps_Admin_Panel_Legacy extends Module implements WidgetInterface
         foreach ($this->fields as $key => $field) {
             foreach ($this->languages as $lang) {
                 if ($field['type'] === 'image') {
-                    $action = $this->upload($key, (int) $lang['id_lang']);
+                    $action = $this->uploadImage($key, (int) $lang['id_lang']);
                     $values[$key][$lang['id_lang']] = $action;
 
                     if ($action === '') {
@@ -431,7 +434,7 @@ class Ps_Admin_Panel_Legacy extends Module implements WidgetInterface
      *
      * @return string
      */
-    private function upload(string $key = '', int $lang = 0): string
+    private function uploadImage(string $key = '', int $lang = 0): string
     {
         if (
             isset($_FILES[$key . '_' . $lang])
@@ -479,6 +482,25 @@ class Ps_Admin_Panel_Legacy extends Module implements WidgetInterface
         }
 
         return '';
+    }
+
+    /**
+     * This method is used to delete all images in the images folder.
+     * It is called when the module is uninstalled.
+     *
+     * @return void
+     */
+    private function deleteImages(): void
+    {
+        $directory = dirname(__FILE__) . '/images/';
+        if (!is_dir($directory)) {
+            return;
+        }
+
+        $images = glob($directory . '*.{jpg,jpeg,png,gif,webp}', GLOB_BRACE);
+        if ($images) {
+            array_map('unlink', $images);
+        }
     }
 
     /**
