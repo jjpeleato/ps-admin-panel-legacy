@@ -32,7 +32,7 @@
                 <span class="input-group-addon"><i class="icon-file"></i></span>
                 <input id="{$input.name}_{$language.id_lang}-name" type="text" class="disabled" name="filename" readonly />
                 <span class="input-group-btn">
-                  <button id="{$input.name}_{$language.id_lang}-selectbutton" type="button" name="submitAddAttachments" class="btn btn-default">
+                  <button id="{$input.name}_{$language.id_lang}-add" type="button" name="submitAddAttachments" class="btn btn-default">
                     <i class="icon-folder-open"></i> {l s='Choose a file' d='Admin.Actions'}
                   </button>
                 </span>
@@ -55,13 +55,18 @@
               <div class="col-lg-12" style="margin-top: 10px;">
                 <img src="{$uri}images/{$fields_value[$input.name][$language.id_lang]}" class="img-thumbnail" width="200" />
               </div>
+              <div class="col-lg-12" style="margin-top: 5px;">
+                <button id="{$input.name}_{$language.id_lang}-delete" type="button" name="submitDeleteAttachments" class="btn btn-default">
+                  <i class="icon-trash"></i> {l s='Delete a file' d='Admin.Actions'}
+                </button>
+              </div>
             {/if}
           {if $languages|count > 1}
             </div>
           {/if}
           <script>
             $(document).ready(function() {
-              $('#{$input.name}_{$language.id_lang}-selectbutton').click(function(e){
+              $('#{$input.name}_{$language.id_lang}-add').click(function(e){
                 $('#{$input.name}_{$language.id_lang}').trigger('click');
               });
 

@@ -380,11 +380,12 @@ class Ps_Admin_Panel_Legacy extends Module implements WidgetInterface
             foreach ($this->languages as $lang) {
                 if ($field['type'] === 'image') {
                     $action = $this->uploadImage($key, (int) $lang['id_lang']);
-                    $values[$key][$lang['id_lang']] = $action;
 
-                    if ($action === '') {
+                    if (false === empty($action)) {
+                        $values[$key][$lang['id_lang']] = $action;
+                    } else {
                         $errors[] = $this->trans(
-                            'An error occurred while attempting to upload the file.',
+                            'An error occurred while attempting to upload the file in the language: ' . $lang['id_lang'],
                             [],
                             $this->domain
                         );
@@ -459,7 +460,11 @@ class Ps_Admin_Panel_Legacy extends Module implements WidgetInterface
                 )
             ) {
                 PrestaShopLogger::addLog(
-                    $this->trans('An error occurred while attempting to upload the file.', [], $this->domain),
+                    $this->trans(
+                        'An error occurred while attempting to run move_uploaded_file in the language: ' . $lang,
+                        [],
+                        $this->domain
+                    ),
                     3
                 );
                 return '';
@@ -481,7 +486,7 @@ class Ps_Admin_Panel_Legacy extends Module implements WidgetInterface
             return $file;
         }
 
-        return '';
+        return Configuration::get($key, $lang);
     }
 
     /**
