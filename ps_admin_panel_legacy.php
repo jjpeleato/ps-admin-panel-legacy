@@ -434,16 +434,13 @@ class Ps_Admin_Panel_Legacy extends Module implements WidgetInterface
         foreach ($this->fields as $key => $field) {
             foreach ($this->languages as $lang) {
                 if ($field['type'] === 'image') {
-                    $action = $this->uploadImage($key, (int) $lang['id_lang']);
+                    $uploaded = $this->uploadImage($key, (int) $lang['id_lang']);
 
-                    if (false === empty($action)) {
-                        $values[$key][$lang['id_lang']] = $action;
+                    if (true === $uploaded['success']) {
+                        $uploaded = $uploaded['filename'];
+                        $values[$key][$lang['id_lang']] = $uploaded;
                     } else {
-                        $errors[] = $this->trans(
-                            'An error occurred while attempting to upload the file in the language: ' . $lang['id_lang'],
-                            [],
-                            $this->domain
-                        );
+                        $errors[] = $uploaded['error'];
                     }
                 } else {
                     $values[$key][$lang['id_lang']] = Tools::getValue($key . '_' . $lang['id_lang']);
@@ -488,9 +485,9 @@ class Ps_Admin_Panel_Legacy extends Module implements WidgetInterface
      * @param string $key
      * @param int $lang
      *
-     * @return string
+     * @return array
      */
-    private function uploadImage(string $key = '', int $lang = 0): string
+    private function uploadImage(string $key = '', int $lang = 0): array
     {
         if (
             isset($_FILES[$key . '_' . $lang])
@@ -498,8 +495,11 @@ class Ps_Admin_Panel_Legacy extends Module implements WidgetInterface
             && !empty($_FILES[$key . '_' . $lang]['tmp_name'])
         ) {
             if ($error = ImageManager::validateUpload($_FILES[$key . '_' . $lang], 4000000)) {
-                PrestaShopLogger::addLog($error, 3);
-                return '';
+                return [
+                    'success' => false,
+                    'filename' => '',
+                    'error' => $error,
+                ];
             }
 
             $ext = substr(
@@ -514,15 +514,15 @@ class Ps_Admin_Panel_Legacy extends Module implements WidgetInterface
                     dirname(__FILE__) . DIRECTORY_SEPARATOR . 'upload' . DIRECTORY_SEPARATOR . $file
                 )
             ) {
-                PrestaShopLogger::addLog(
-                    $this->trans(
+                return [
+                    'success' => false,
+                    'filename' => '',
+                    'error' => $this->trans(
                         'An error occurred while attempting to run move_uploaded_file in the language: ' . $lang,
                         [],
                         $this->domain
                     ),
-                    3
-                );
-                return '';
+                ];
             }
 
             // Delete old image.
@@ -538,10 +538,18 @@ class Ps_Admin_Panel_Legacy extends Module implements WidgetInterface
                 );
             }
 
-            return $file;
+            return [
+                'success' => true,
+                'filename' => $file,
+                'error' => '',
+            ];
         }
 
-        return Configuration::get($key, $lang);
+        return [
+            'success' => true,
+            'filename' => Configuration::get($key, $lang),
+            'error' => '',
+        ];
     }
 
     /**
