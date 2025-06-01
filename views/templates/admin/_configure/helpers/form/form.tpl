@@ -52,10 +52,10 @@
               </div>
             {/if}
             {if isset($fields_value[$input.name][$language.id_lang]) && $fields_value[$input.name][$language.id_lang] != ''}
-              <div class="col-lg-12" style="margin-top: 10px;">
+              <div id="{$input.name}_{$language.id_lang}-thumbnail" class="col-lg-12" style="margin-top: 10px;">
                 <img src="{$uri}upload/{$fields_value[$input.name][$language.id_lang]}" class="img-thumbnail" width="200" />
               </div>
-              <div class="col-lg-12" style="margin-top: 5px;">
+              <div id="{$input.name}_{$language.id_lang}-actions" class="col-lg-12" style="margin-top: 5px;">
                 <button id="{$input.name}_{$language.id_lang}-delete"  type="button" name="submitDeleteAttachments" class="btn btn-danger">
                   <i class="icon-trash"></i> {l s='Delete a file' d='Admin.Actions'}
                 </button>
@@ -83,15 +83,21 @@
                   dataType: 'JSON',
                   async: false,
                   data: {
-                    controller: window.psapl_controller_delete,
-                    action: 'DeleteImage',
                     ajax: true,
+                    controller: window.psapl_controller_delete,
+                    action: 'DeleteMedia',
+                    body: {
+                      name: '{$input.name}',
+                      lang: '{$language.id_lang}',
+                    }
                   },
                   success: function (result, status, xhr) {
-                    if (result === 'success') {
-                      alert("success");
+                    if (result.success) {
+                      $('#{$input.name}_{$language.id_lang}-thumbnail').remove();
+                      $('#{$input.name}_{$language.id_lang}-actions').remove();
+                      alert(result.message || "Image deleted successfully.");
                     } else {
-                      alert("error");
+                      alert(result.message || "Error deleting image.");
                     }
                   },
                   error: function (xhr, status, error) {

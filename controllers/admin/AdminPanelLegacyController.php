@@ -19,9 +19,9 @@
  * @license   https://opensource.org/licenses/AFL-3.0 Academic Free License version 3.0
  */
 
- declare(strict_types=1);
+declare(strict_types=1);
 
- // phpcs:disable
+// phpcs:disable
 /**
  * If this file is called directly, then abort execution.
  */
@@ -50,24 +50,61 @@ class AdminPanelLegacyController extends ModuleAdminController
     }
 
     /**
-     * TODO: Short description.
+     * Handles the AJAX request to delete a file.
      *
-     * @throws PrestaShopException
+     * @return void
      */
-    public function displayAjaxDeleteImage()
+    public function displayAjaxDeleteMedia()
     {
-        $now = new DateTime();
+        $body = Tools::getValue('body');
+        $name = $body['name'] ?? '';
+        $idLang = (int) $body['lang'] ?? 0;
 
-        // Response
-        $this->ajaxRenderJson($now);
+        if (!$name || !$idLang) {
+            return $this->ajaxRenderJson([
+                'success' => false,
+                'message' => 'Missing required parameters.',
+            ]);
+        }
+
+        $filename = Configuration::get($name, $idLang);
+
+        if (!$filename) {
+            return $this->ajaxRenderJson([
+                'success' => false,
+                'message' => 'No media registered for this field and language.',
+            ]);
+        }
+
+        $mediaDir = _PS_MODULE_DIR_ . 'ps_admin_panel_legacy' . DIRECTORY_SEPARATOR . 'upload' . DIRECTORY_SEPARATOR;
+        $mediaPath = $mediaDir . $filename;
+
+        if (!file_exists($mediaPath)) {
+            return $this->ajaxRenderJson([
+                'success' => false,
+                'message' => 'Media file not found on server.',
+            ]);
+        }
+
+        if (!@unlink($mediaPath)) {
+            return $this->ajaxRenderJson([
+                'success' => false,
+                'message' => 'Unable to delete the media file.',
+            ]);
+        }
+
+        Configuration::updateValue($name, [$idLang => '']);
+
+        return $this->ajaxRenderJson([
+            'success' => true,
+            'message' => 'Media deleted successfully.',
+        ]);
     }
 
     /**
-     * TODO: Short description.
+     * Renders a JSON response.
      *
-     * @param string $content
-     *
-     * @throws PrestaShopException
+     * @param mixed $content The content to be rendered as JSON.
      */
     private function ajaxRenderJson($content)
     {
