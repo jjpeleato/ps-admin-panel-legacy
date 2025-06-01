@@ -137,7 +137,29 @@ class Ps_Admin_Panel_Legacy extends Module implements WidgetInterface
     public function install(): bool
     {
         return parent::install() &&
+            $this->installTab() &&
             $this->installShopFixtures();
+    }
+
+    /**
+     * This method is used to install a tab in the back office.
+     * It is called when the module is installed.
+     *
+     * @return bool
+     */
+    private function installTab()
+    {
+        $tab = new Tab();
+        $tab->active = true;
+        $tab->class_name = 'AdminPanelLegacy';
+        $tab->id_parent = -1;
+        $tab->module = $this->name;
+
+        foreach (Language::getLanguages(true) as $lang) {
+            $tab->name[$lang['id_lang']] = $this->name;
+        }
+
+        return $tab->add();
     }
 
     /**
@@ -211,9 +233,26 @@ class Ps_Admin_Panel_Legacy extends Module implements WidgetInterface
         // Delete all images in the images folder.
         $this->deleteImages();
 
+        // Uninstall the tab in the back office.
+        $this->uninstallTab();
+
         PrestaShopLogger::addLog("Uninstalled module: $this->name", 1);
 
         return parent::uninstall();
+    }
+
+    /**
+     * This method is used to uninstall the tab in the back office.
+     * It is called when the module is uninstalled.
+     *
+     * @return bool
+     */
+    private function uninstallTab()
+    {
+        $id_tab = Tab::getIdFromClassName('AdminPanelLegacy');
+        $tab = new Tab($id_tab);
+
+        return $tab->delete();
     }
 
     /**
@@ -239,6 +278,8 @@ class Ps_Admin_Panel_Legacy extends Module implements WidgetInterface
             }
         }
 
+        $this->addJsDefList();
+
         /**
          * If submitted, the save process is triggered.
          */
@@ -253,6 +294,20 @@ class Ps_Admin_Panel_Legacy extends Module implements WidgetInterface
         $renderTemplate = $this->context->smarty->fetch('module:ps_admin_panel_legacy/views/templates/admin/index.tpl');
 
         return $output . $this->renderForm() . $renderTemplate;
+    }
+
+    /**
+     * This method is used to add JavaScript definitions to the page.
+     * It is called when the module is displayed in the back office.
+     *
+     * @return void
+     */
+    private function addJsDefList()
+    {
+        Media::addJsDef([
+            'psapl_controller_delete_url' => $this->context->link->getAdminLink('AdminPanelLegacy'),
+            'psapl_controller_delete' => 'AdminPanelLegacy',
+        ]);
     }
 
     /**
@@ -456,7 +511,7 @@ class Ps_Admin_Panel_Legacy extends Module implements WidgetInterface
             if (
                 false === move_uploaded_file(
                     $_FILES[$key . '_' . $lang]['tmp_name'],
-                    dirname(__FILE__) . DIRECTORY_SEPARATOR . 'images' . DIRECTORY_SEPARATOR . $file
+                    dirname(__FILE__) . DIRECTORY_SEPARATOR . 'upload' . DIRECTORY_SEPARATOR . $file
                 )
             ) {
                 PrestaShopLogger::addLog(
@@ -476,7 +531,7 @@ class Ps_Admin_Panel_Legacy extends Module implements WidgetInterface
                 && Configuration::get($key, $lang) != $file
             ) {
                 @unlink(
-                    dirname(__FILE__) . DIRECTORY_SEPARATOR . 'images' . DIRECTORY_SEPARATOR . Configuration::get(
+                    dirname(__FILE__) . DIRECTORY_SEPARATOR . 'upload' . DIRECTORY_SEPARATOR . Configuration::get(
                         $key,
                         $lang
                     )
@@ -497,7 +552,7 @@ class Ps_Admin_Panel_Legacy extends Module implements WidgetInterface
      */
     private function deleteImages(): void
     {
-        $directory = dirname(__FILE__) . '/images/';
+        $directory = dirname(__FILE__) . '/upload/';
         if (!is_dir($directory)) {
             return;
         }

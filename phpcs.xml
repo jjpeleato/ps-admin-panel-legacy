@@ -43,6 +43,9 @@
 
 	<!-- Inherit rules from: -->
 	<rule ref="PSR1"/>
+  <rule ref="PSR1.Classes.ClassDeclaration.MissingNamespace">
+    <severity>0</severity>
+  </rule>
 
 	<!-- Inherit rules from: -->
 	<rule ref="PSR12"/>

@@ -1,6 +1,6 @@
 composer.lock
-images/*
-!images/index.php
+upload/*
+!upload/index.php
 node_modules
 package-lock.json
 vendor

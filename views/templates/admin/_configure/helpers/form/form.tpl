@@ -30,7 +30,7 @@
               <div class="dummyfile input-group">
                 <input id="{$input.name}_{$language.id_lang}" type="file" name="{$input.name}_{$language.id_lang}" class="hide-file-upload" />
                 <span class="input-group-addon"><i class="icon-file"></i></span>
-                <input id="{$input.name}_{$language.id_lang}-name" type="text" class="disabled" name="filename" readonly />
+                <input id="{$input.name}_{$language.id_lang}-name" type="text" name="filename" class="disabled" readonly />
                 <span class="input-group-btn">
                   <button id="{$input.name}_{$language.id_lang}-add" type="button" name="submitAddAttachments" class="btn btn-default">
                     <i class="icon-folder-open"></i> {l s='Choose a file' d='Admin.Actions'}
@@ -53,10 +53,10 @@
             {/if}
             {if isset($fields_value[$input.name][$language.id_lang]) && $fields_value[$input.name][$language.id_lang] != ''}
               <div class="col-lg-12" style="margin-top: 10px;">
-                <img src="{$uri}images/{$fields_value[$input.name][$language.id_lang]}" class="img-thumbnail" width="200" />
+                <img src="{$uri}upload/{$fields_value[$input.name][$language.id_lang]}" class="img-thumbnail" width="200" />
               </div>
               <div class="col-lg-12" style="margin-top: 5px;">
-                <button id="{$input.name}_{$language.id_lang}-delete" type="button" name="submitDeleteAttachments" class="btn btn-default">
+                <button id="{$input.name}_{$language.id_lang}-delete"  type="button" name="submitDeleteAttachments" class="btn btn-danger">
                   <i class="icon-trash"></i> {l s='Delete a file' d='Admin.Actions'}
                 </button>
               </div>
@@ -74,6 +74,30 @@
                 var val = $(this).val();
                 var file = val.split(/[\\/]/);
                 $('#{$input.name}_{$language.id_lang}-name').val(file[file.length-1]);
+              });
+
+              $('#{$input.name}_{$language.id_lang}-delete').click(function(e){
+                $.ajax({
+                  url: window.psapl_controller_delete_url,
+                  type: 'POST',
+                  dataType: 'JSON',
+                  async: false,
+                  data: {
+                    controller: window.psapl_controller_delete,
+                    action: 'DeleteImage',
+                    ajax: true,
+                  },
+                  success: function (result, status, xhr) {
+                    if (result === 'success') {
+                      alert("success");
+                    } else {
+                      alert("error");
+                    }
+                  },
+                  error: function (xhr, status, error) {
+                    console.error("Error deleting image");
+                  }
+                });
               });
             });
           </script>

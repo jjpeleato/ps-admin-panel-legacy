@@ -34,7 +34,7 @@
       {/if}
       {if false === empty($image)}
         <div class="image">
-          <img src="{$path}/images/{$image}" alt="{$title}" title="{$title}" />
+          <img src="{$path}/upload/{$image}" alt="{$title}" title="{$title}" />
         </div>
       {/if}
     </div>
