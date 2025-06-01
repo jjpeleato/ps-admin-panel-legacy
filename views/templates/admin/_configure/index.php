@@ -1,4 +1,6 @@
-{**
+<?php
+
+/**
  * Copyright since 2007 PrestaShop SA and Contributors
  * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
  *
@@ -15,28 +17,14 @@
  * @author    PrestaShop SA and Contributors <contact@prestashop.com>
  * @copyright Since 2007 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/AFL-3.0 Academic Free License version 3.0
- *}
-<div class="container">
-  <div class="row">
-    <div class="col-12">
-      {if false === empty($title)}
-        <h3>{$title}</h3>
-      {/if}
-      {if false === empty($short_description)}
-        <div class="description">
-          {$short_description nofilter}
-        </div>
-      {/if}
-      {if false === empty($description)}
-        <div class="description">
-          {$description nofilter}
-        </div>
-      {/if}
-      {if false === empty($image)}
-        <div class="image">
-          <img src="{$path}/upload/{$image}" alt="{$title}" title="{$title}" />
-        </div>
-      {/if}
-    </div>
-  </div>
-</div>
+ */
+
+header('Expires: Mon, 26 Jul 1997 05:00:00 GMT');
+header('Last-Modified: ' . gmdate('D, d M Y H:i:s') . ' GMT');
+
+header('Cache-Control: no-store, no-cache, must-revalidate');
+header('Cache-Control: post-check=0, pre-check=0', false);
+header('Pragma: no-cache');
+
+header('Location: ../');
+exit;

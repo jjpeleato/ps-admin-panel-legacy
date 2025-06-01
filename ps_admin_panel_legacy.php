@@ -80,6 +80,7 @@ class Ps_Admin_Panel_Legacy extends Module implements WidgetInterface
                 'machine_name' => 'title',
                 'type' => 'text',
                 'lang' => true,
+                'required' => true,
                 'label' => $this->trans('Title', [], $this->domain),
                 'desc' => $this->trans('Write a title for the section.', [], $this->domain),
                 'value' => '',
@@ -88,6 +89,7 @@ class Ps_Admin_Panel_Legacy extends Module implements WidgetInterface
                 'machine_name' => 'short_description',
                 'type' => 'html',
                 'lang' => true,
+                'required' => false,
                 'label' => $this->trans('Short description', [], $this->domain),
                 'desc' => $this->trans('Write a short description for the section.', [], $this->domain),
                 'value' => '',
@@ -96,8 +98,18 @@ class Ps_Admin_Panel_Legacy extends Module implements WidgetInterface
                 'machine_name' => 'description',
                 'type' => 'html',
                 'lang' => true,
+                'required' => false,
                 'label' => $this->trans('Description', [], $this->domain),
                 'desc' => $this->trans('Write a description for the section.', [], $this->domain),
+                'value' => '',
+            ],
+            'PS_ADMIN_PANEL_LEGACY_IMAGE' => [
+                'machine_name' => 'image',
+                'type' => 'image',
+                'lang' => true,
+                'required' => false,
+                'label' => $this->trans('Image', [], $this->domain),
+                'desc' => $this->trans('Upload an image for the section.', [], $this->domain),
                 'value' => '',
             ],
         ];
@@ -125,7 +137,29 @@ class Ps_Admin_Panel_Legacy extends Module implements WidgetInterface
     public function install(): bool
     {
         return parent::install() &&
+            $this->installTab() &&
             $this->installShopFixtures();
+    }
+
+    /**
+     * This method is used to install a tab in the back office.
+     * It is called when the module is installed.
+     *
+     * @return bool
+     */
+    private function installTab()
+    {
+        $tab = new Tab();
+        $tab->active = true;
+        $tab->class_name = 'AdminPanelLegacy';
+        $tab->id_parent = -1;
+        $tab->module = $this->name;
+
+        foreach (Language::getLanguages(true) as $lang) {
+            $tab->name[$lang['id_lang']] = $this->name;
+        }
+
+        return $tab->add();
     }
 
     /**
@@ -162,7 +196,7 @@ class Ps_Admin_Panel_Legacy extends Module implements WidgetInterface
      * @param int $idShopGroup
      * @param int $idShop
      */
-    private function installLanguageFixture(int $idLang, int $idShopGroup, int $idShop): bool
+    private function installLanguageFixture(int $idLang = 0, int $idShopGroup = 0, int $idShop = 0): bool
     {
         foreach ($this->fields as $key => $field) {
             if (!Configuration::updateValue($key, [$idLang => $field['value']], false, $idShopGroup, $idShop)) {
@@ -196,16 +230,38 @@ class Ps_Admin_Panel_Legacy extends Module implements WidgetInterface
             }
         }
 
+        // Delete all images in the images folder.
+        $this->deleteImages();
+
+        // Uninstall the tab in the back office.
+        $this->uninstallTab();
+
         PrestaShopLogger::addLog("Uninstalled module: $this->name", 1);
 
         return parent::uninstall();
     }
 
     /**
+     * This method is used to uninstall the tab in the back office.
+     * It is called when the module is uninstalled.
+     *
+     * @return bool
+     */
+    private function uninstallTab()
+    {
+        $id_tab = Tab::getIdFromClassName('AdminPanelLegacy');
+        $tab = new Tab($id_tab);
+
+        return $tab->delete();
+    }
+
+    /**
      * This method is used to get the content of the module.
      * It is called when the module is displayed in the back office.
+     *
+     * @return string
      */
-    public function getContent()
+    public function getContent(): string
     {
         /**
          * If the multi-store is active, check if the store is selected
@@ -222,6 +278,8 @@ class Ps_Admin_Panel_Legacy extends Module implements WidgetInterface
             }
         }
 
+        $this->addJsDefList();
+
         /**
          * If submitted, the save process is triggered.
          */
@@ -236,6 +294,20 @@ class Ps_Admin_Panel_Legacy extends Module implements WidgetInterface
         $renderTemplate = $this->context->smarty->fetch('module:ps_admin_panel_legacy/views/templates/admin/index.tpl');
 
         return $output . $this->renderForm() . $renderTemplate;
+    }
+
+    /**
+     * This method is used to add JavaScript definitions to the page.
+     * It is called when the module is displayed in the back office.
+     *
+     * @return void
+     */
+    private function addJsDefList()
+    {
+        Media::addJsDef([
+            'psapl_controller_delete_url' => $this->context->link->getAdminLink('AdminPanelLegacy'),
+            'psapl_controller_delete' => 'AdminPanelLegacy',
+        ]);
     }
 
     /**
@@ -266,7 +338,11 @@ class Ps_Admin_Panel_Legacy extends Module implements WidgetInterface
         $helper->submit_action = 'submit_' . $this->name;
 
         // Load current value into the form.
-        $helper->fields_value = $this->getConfigFieldsValues();
+        $helper->tpl_vars = [
+            'uri' => $this->getPathUri(),
+            'fields_value' => $this->getConfigFieldsValues(),
+            'languages' => $this->context->controller->getLanguages(),
+        ];
 
         return $helper->generateForm([$this->getConfigForm()]);
     }
@@ -296,15 +372,13 @@ class Ps_Admin_Panel_Legacy extends Module implements WidgetInterface
         // Add fields to the form.
         foreach ($this->fields as $key => $field) {
             $form['form']['input'][$field['machine_name']] = [
+                'type' => $field['type'],
                 'lang' => $field['lang'],
+                'required' => $field['required'],
                 'label' => $field['label'],
                 'name' => $key,
                 'desc' => $field['desc'],
             ];
-
-            if ($field['type'] === 'text') {
-                $form['form']['input'][$field['machine_name']]['type'] = 'text';
-            }
 
             if ($field['type'] === 'html') {
                 $form['form']['input'][$field['machine_name']]['type'] = 'textarea';
@@ -313,6 +387,10 @@ class Ps_Admin_Panel_Legacy extends Module implements WidgetInterface
                 $form['form']['input'][$field['machine_name']]['rows'] = 75;
                 $form['form']['input'][$field['machine_name']]['class'] = 'rte';
                 $form['form']['input'][$field['machine_name']]['autoload_rte'] = true;
+            }
+
+            if ($field['type'] === 'image') {
+                $form['form']['input'][$field['machine_name']]['type'] = 'image_lang';
             }
         }
 
@@ -353,9 +431,20 @@ class Ps_Admin_Panel_Legacy extends Module implements WidgetInterface
         $values = [];
         $errors = [];
 
-        foreach (array_keys($this->fields) as $key) {
+        foreach ($this->fields as $key => $field) {
             foreach ($this->languages as $lang) {
-                $values[$key][$lang['id_lang']] = Tools::getValue($key . '_' . $lang['id_lang']);
+                if ($field['type'] === 'image') {
+                    $uploaded = $this->uploadImage($key, (int) $lang['id_lang']);
+
+                    if (true === $uploaded['success']) {
+                        $uploaded = $uploaded['filename'];
+                        $values[$key][$lang['id_lang']] = $uploaded;
+                    } else {
+                        $errors[] = $uploaded['error'];
+                    }
+                } else {
+                    $values[$key][$lang['id_lang']] = Tools::getValue($key . '_' . $lang['id_lang']);
+                }
             }
 
             if (!Configuration::updateValue($key, $values[$key], true)) {
@@ -390,6 +479,99 @@ class Ps_Admin_Panel_Legacy extends Module implements WidgetInterface
     }
 
     /**
+     * This method is used to upload an image.
+     * It is called when the form is submitted.
+     *
+     * @param string $key
+     * @param int $lang
+     *
+     * @return array
+     */
+    private function uploadImage(string $key = '', int $lang = 0): array
+    {
+        if (
+            isset($_FILES[$key . '_' . $lang])
+            && isset($_FILES[$key . '_' . $lang]['tmp_name'])
+            && !empty($_FILES[$key . '_' . $lang]['tmp_name'])
+        ) {
+            if ($error = ImageManager::validateUpload($_FILES[$key . '_' . $lang], 4000000)) {
+                return [
+                    'success' => false,
+                    'filename' => '',
+                    'error' => $error,
+                ];
+            }
+
+            $ext = substr(
+                $_FILES[$key . '_' . $lang]['name'],
+                strrpos($_FILES[$key . '_' . $lang]['name'], '.') + 1
+            );
+            $file = md5($_FILES[$key . '_' . $lang]['name']) . '.' . $ext;
+
+            if (
+                false === move_uploaded_file(
+                    $_FILES[$key . '_' . $lang]['tmp_name'],
+                    dirname(__FILE__) . DIRECTORY_SEPARATOR . 'upload' . DIRECTORY_SEPARATOR . $file
+                )
+            ) {
+                return [
+                    'success' => false,
+                    'filename' => '',
+                    'error' => $this->trans(
+                        'An error occurred while attempting to run move_uploaded_file in the language: ' . $lang,
+                        [],
+                        $this->domain
+                    ),
+                ];
+            }
+
+            // Delete old image.
+            if (
+                Configuration::hasContext($key, $lang, Shop::getContext())
+                && Configuration::get($key, $lang) != $file
+            ) {
+                @unlink(
+                    dirname(__FILE__) . DIRECTORY_SEPARATOR . 'upload' . DIRECTORY_SEPARATOR . Configuration::get(
+                        $key,
+                        $lang
+                    )
+                );
+            }
+
+            return [
+                'success' => true,
+                'filename' => $file,
+                'error' => '',
+            ];
+        }
+
+        return [
+            'success' => true,
+            'filename' => Configuration::get($key, $lang),
+            'error' => '',
+        ];
+    }
+
+    /**
+     * This method is used to delete all images in the images folder.
+     * It is called when the module is uninstalled.
+     *
+     * @return void
+     */
+    private function deleteImages(): void
+    {
+        $directory = dirname(__FILE__) . '/upload/';
+        if (!is_dir($directory)) {
+            return;
+        }
+
+        $images = glob($directory . '*.{jpg,jpeg,png,gif,webp}', GLOB_BRACE);
+        if ($images) {
+            array_map('unlink', $images);
+        }
+    }
+
+    /**
      * Implement the renderWidget method.
      *
      * This method is used to render the widget.
@@ -407,6 +589,9 @@ class Ps_Admin_Panel_Legacy extends Module implements WidgetInterface
         }
 
         $this->context->smarty->assign($variables);
+        $this->smarty->assign([
+            'path' => $this->_path,
+        ]);
         return $this->fetch('module:ps_admin_panel_legacy/views/templates/widget/index.tpl');
     }
 
