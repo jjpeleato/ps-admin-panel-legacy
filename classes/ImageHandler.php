@@ -45,6 +45,12 @@ if (!defined('_PS_VERSION_')) {
  */
 class ImageHandler
 {
+    /**
+     * Maximum file size for image uploads.
+     * This is set to 4 MB (4000000 bytes).
+     */
+    private const MAX_FILE_SIZE = 4000000; // 4 MB
+
     /** @var string $path */
     private string $path = '';
 
@@ -62,10 +68,12 @@ class ImageHandler
      *
      * This constructor initializes the allowed image extensions.
      * It is called when an instance of the class is created.
+     *
+     * @param string $path The path where images will be uploaded.
      */
-    public function __construct()
+    public function __construct(string $path = '')
     {
-        $this->path = dirname(__FILE__) . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR . 'upload' . DIRECTORY_SEPARATOR;
+        $this->path = $path;
         $this->translator = Context::getContext()->getTranslator();
         $this->authExtensions = ['gif', 'jpg', 'jpeg', 'jpe', 'png', 'svg'];
         $this->authMimeType = [
@@ -81,22 +89,46 @@ class ImageHandler
     }
 
     /**
-     * This method is used to upload an image.
-     * It is called when the form is submitted.
+     * Uploads an image to the configured directory.
      *
-     * @param string $key
-     * @param int $lang
+     * @param array $file The file data array (e.g., $_FILES['field']).
+     * @param string $key The configuration key for the image.
+     * @param int $lang The language ID for the configuration.
      *
-     * @return array
+     * @return array {
+     *     @type bool   $success  True if upload succeeded, false otherwise.
+     *     @type string $filename The sanitized file name.
+     *     @type string $error    Error message if any.
+     * }
      */
-    public function uploadImage(string $key = '', int $lang = 0): array
+    public function uploadImage(array $files = [], string $key = '', int $lang = 0): array
     {
+        if (!is_dir($this->path)) {
+            return [
+                'success' => false,
+                'filename' => '',
+                'error' => $this->translator->trans(
+                    'Upload directory could not be created.',
+                    [],
+                    PS_ADMIN_PANEL_LEGACY_DOMAIN
+                ),
+            ];
+        }
+
+        $uploading = $files[$key . '_' . $lang];
+
         if (
-            isset($_FILES[$key . '_' . $lang])
-            && isset($_FILES[$key . '_' . $lang]['tmp_name'])
-            && !empty($_FILES[$key . '_' . $lang]['tmp_name'])
+            isset($uploading)
+            && isset($uploading['tmp_name'])
+            && !empty($uploading['tmp_name'])
         ) {
-            if ($error = ImageManager::validateUpload($_FILES[$key . '_' . $lang], 4000000, $this->authExtensions, $this->authMimeType)) {
+            $error = ImageManager::validateUpload(
+                $uploading,
+                self::MAX_FILE_SIZE,
+                $this->authExtensions,
+                $this->authMimeType
+            );
+            if ($error) {
                 return [
                     'success' => false,
                     'filename' => '',
@@ -104,18 +136,11 @@ class ImageHandler
                 ];
             }
 
-            $ext = substr(
-                $_FILES[$key . '_' . $lang]['name'],
-                strrpos($_FILES[$key . '_' . $lang]['name'], '.') + 1
-            );
-            $file = md5($_FILES[$key . '_' . $lang]['name']) . '.' . $ext;
+            $ext = substr($uploading['name'], strrpos($uploading['name'], '.') + 1);
+            $safeName = $this->sanitizeFileName($uploading['name']);
+            $filename = md5($safeName) . '.' . $ext;
 
-            if (
-                false === move_uploaded_file(
-                    $_FILES[$key . '_' . $lang]['tmp_name'],
-                    $this->path . $file
-                )
-            ) {
+            if (!move_uploaded_file($uploading['tmp_name'], $this->path . $filename)) {
                 return [
                     'success' => false,
                     'filename' => '',
@@ -128,17 +153,11 @@ class ImageHandler
             }
 
             // Delete old image.
-            if (
-                Configuration::hasContext($key, $lang, Shop::getContext())
-                && Configuration::get($key, $lang) != $file
-            ) {
-                $oldImage = Configuration::get($key, $lang);
-                @unlink($this->path . $oldImage);
-            }
+            $this->deleteImage($key, $lang, $filename);
 
             return [
                 'success' => true,
-                'filename' => $file,
+                'filename' => $filename,
                 'error' => '',
             ];
         }
@@ -151,8 +170,26 @@ class ImageHandler
     }
 
     /**
-     * This method is used to delete all images in the images folder.
-     * It is called when the module is uninstalled.
+     * Deletes a specific image file.
+     *
+     * @param string $key The configuration key for the image.
+     * @param int $lang The language ID for the configuration.
+     * @param string $filename The name of the file to delete.
+     *
+     * @return bool True if the file was deleted, false otherwise.
+     */
+    private function deleteImage(string $key, int $lang, string $filename): bool
+    {
+        if (Configuration::hasContext($key, $lang, Shop::getContext()) && Configuration::get($key, $lang) != $filename) {
+            $oldImage = Configuration::get($key, $lang);
+            return @unlink($this->path . $oldImage);
+        }
+
+        return false;
+    }
+
+    /**
+     * Deletes all images in the configured directory.
      *
      * @return void
      */
@@ -166,5 +203,20 @@ class ImageHandler
         if ($images) {
             array_map('unlink', $images);
         }
+    }
+
+    /**
+     * Sanitizes the file name to prevent security issues.
+     *
+     * @param string $filename
+     *
+     * @return string
+     */
+    private function sanitizeFileName(string $filename): string
+    {
+        $filename = basename($filename);
+        $filename = preg_replace('/[^a-zA-Z0-9_\.-]/', '_', $filename);
+
+        return $filename;
     }
 }
