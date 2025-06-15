@@ -23,8 +23,13 @@ declare(strict_types=1);
 if (!defined('_PS_VERSION_')) {
     exit;
 }
+
+if (true === file_exists(__DIR__ . '/vendor/autoload.php')) {
+    require_once __DIR__ . '/vendor/autoload.php';
+}
 // phpcs:enable
 
+use PrestaShop\Module\PsAdminPanelLegacy\Native\Classes\ImageHandler;
 use PrestaShop\PrestaShop\Core\Module\WidgetInterface;
 
 /**
@@ -42,19 +47,17 @@ class Ps_Admin_Panel_Legacy extends Module implements WidgetInterface
     /** @var array $languages */
     private array $languages = [];
 
-    /** @var string $domain */
-    private string $domain = 'Modules.Psadminpanellegacy.Admin';
-
     /** @var array $fields */
     private array $fields = [];
+
+    /** @var ImageHandler $imageHandler */
+    private ImageHandler $imageHandler;
 
     /**
      * Ps_Admin_Panel_Legacy constructor.
      */
     public function __construct()
     {
-        $this->shops = Shop::getShops();
-        $this->languages = Language::getLanguages(false);
         $this->name = 'ps_admin_panel_legacy';
         $this->tab = 'front_office_features';
         $this->version = '0.1.0';
@@ -66,53 +69,21 @@ class Ps_Admin_Panel_Legacy extends Module implements WidgetInterface
             'max' => '8.2.1'
         ];
         $this->bootstrap = true;
-        $this->displayName = $this->trans('PrestaShop Admin Panel', [], $this->domain);
+        $this->displayName = $this->trans('PrestaShop Admin Panel', [], PS_ADMIN_PANEL_LEGACY_DOMAIN);
         $this->description = $this->trans(
             'PrestaShop module that adds an admin panel to the back office, allowing easy configuration of different types of fields.',
             [],
-            $this->domain
+            PS_ADMIN_PANEL_LEGACY_DOMAIN
         );
-        $this->confirmUninstall = $this->trans('Are you sure you want to uninstall?', [], $this->domain);
+        $this->confirmUninstall = $this->trans('Are you sure you want to uninstall?', [], PS_ADMIN_PANEL_LEGACY_DOMAIN);
 
-        // Set the module's configuration fields.
-        $this->fields = [
-            'PS_ADMIN_PANEL_LEGACY_TITLE' => [
-                'machine_name' => 'title',
-                'type' => 'text',
-                'lang' => true,
-                'required' => true,
-                'label' => $this->trans('Title', [], $this->domain),
-                'desc' => $this->trans('Write a title for the section.', [], $this->domain),
-                'value' => '',
-            ],
-            'PS_ADMIN_PANEL_LEGACY_SHORT_DESCRIPTION' => [
-                'machine_name' => 'short_description',
-                'type' => 'html',
-                'lang' => true,
-                'required' => false,
-                'label' => $this->trans('Short description', [], $this->domain),
-                'desc' => $this->trans('Write a short description for the section.', [], $this->domain),
-                'value' => '',
-            ],
-            'PS_ADMIN_PANEL_LEGACY_DESCRIPTION' => [
-                'machine_name' => 'description',
-                'type' => 'html',
-                'lang' => true,
-                'required' => false,
-                'label' => $this->trans('Description', [], $this->domain),
-                'desc' => $this->trans('Write a description for the section.', [], $this->domain),
-                'value' => '',
-            ],
-            'PS_ADMIN_PANEL_LEGACY_IMAGE' => [
-                'machine_name' => 'image',
-                'type' => 'image',
-                'lang' => true,
-                'required' => false,
-                'label' => $this->trans('Image', [], $this->domain),
-                'desc' => $this->trans('Upload an image for the section.', [], $this->domain),
-                'value' => '',
-            ],
-        ];
+        // Set the module's configuration.
+        $this->shops = Shop::getShops();
+        $this->languages = Language::getLanguages(false);
+        $this->fields = PS_ADMIN_PANEL_LEGACY_FIELDS;
+
+        // Initialize the image handler.
+        $this->imageHandler = new ImageHandler(PS_ADMIN_PANEL_LEGACY_DOMAIN);
 
         parent::__construct();
     }
@@ -147,7 +118,7 @@ class Ps_Admin_Panel_Legacy extends Module implements WidgetInterface
      *
      * @return bool
      */
-    private function installTab()
+    protected function installTab()
     {
         $tab = new Tab();
         $tab->active = true;
@@ -168,7 +139,7 @@ class Ps_Admin_Panel_Legacy extends Module implements WidgetInterface
      *
      * @return bool
      */
-    private function installShopFixtures(): bool
+    protected function installShopFixtures(): bool
     {
         foreach ($this->shops as $shop) {
             $idShopGroup = (int) $shop['id_shop_group'];
@@ -196,7 +167,7 @@ class Ps_Admin_Panel_Legacy extends Module implements WidgetInterface
      * @param int $idShopGroup
      * @param int $idShop
      */
-    private function installLanguageFixture(int $idLang = 0, int $idShopGroup = 0, int $idShop = 0): bool
+    protected function installLanguageFixture(int $idLang = 0, int $idShopGroup = 0, int $idShop = 0): bool
     {
         foreach ($this->fields as $key => $field) {
             if (!Configuration::updateValue($key, [$idLang => $field['value']], false, $idShopGroup, $idShop)) {
@@ -231,7 +202,7 @@ class Ps_Admin_Panel_Legacy extends Module implements WidgetInterface
         }
 
         // Delete all images in the images folder.
-        $this->deleteImages();
+        $this->imageHandler->deleteImages();
 
         // Uninstall the tab in the back office.
         $this->uninstallTab();
@@ -247,7 +218,7 @@ class Ps_Admin_Panel_Legacy extends Module implements WidgetInterface
      *
      * @return bool
      */
-    private function uninstallTab()
+    protected function uninstallTab()
     {
         $id_tab = Tab::getIdFromClassName('AdminPanelLegacy');
         $tab = new Tab($id_tab);
@@ -273,7 +244,7 @@ class Ps_Admin_Panel_Legacy extends Module implements WidgetInterface
 
             if ($idShop === 0) {
                 return $this->displayInformation(
-                    $this->trans('You must select a store.', [], $this->domain)
+                    $this->trans('You must select a store.', [], PS_ADMIN_PANEL_LEGACY_DOMAIN)
                 );
             }
         }
@@ -302,7 +273,7 @@ class Ps_Admin_Panel_Legacy extends Module implements WidgetInterface
      *
      * @return void
      */
-    private function addJsDefList()
+    protected function addJsDefList()
     {
         Media::addJsDef([
             'psapl_controller_delete_url' => $this->context->link->getAdminLink('AdminPanelLegacy'),
@@ -318,7 +289,7 @@ class Ps_Admin_Panel_Legacy extends Module implements WidgetInterface
      *
      * @return string
      */
-    private function renderForm()
+    protected function renderForm()
     {
         $helper = new HelperForm();
 
@@ -354,17 +325,17 @@ class Ps_Admin_Panel_Legacy extends Module implements WidgetInterface
      *
      * @return array
      */
-    private function getConfigForm(): array
+    protected function getConfigForm(): array
     {
         $form = [
             'form' => [
                 'tinymce' => true,
                 'legend' => [
-                    'title' => $this->trans('Settings', [], $this->domain),
+                    'title' => $this->trans('Settings', [], PS_ADMIN_PANEL_LEGACY_DOMAIN),
                     'icon' => 'icon-cogs'
                 ],
                 'submit' => [
-                    'title' => $this->trans('Save', [], $this->domain),
+                    'title' => $this->trans('Save', [], PS_ADMIN_PANEL_LEGACY_DOMAIN),
                 ],
             ],
         ];
@@ -402,7 +373,7 @@ class Ps_Admin_Panel_Legacy extends Module implements WidgetInterface
      *
      * @return array
      */
-    private function getConfigFieldsValues(): array
+    protected function getConfigFieldsValues(): array
     {
         $fields = [];
 
@@ -426,7 +397,7 @@ class Ps_Admin_Panel_Legacy extends Module implements WidgetInterface
      *
      * @return string
      */
-    private function postProcess(): string
+    protected function postProcess(): string
     {
         $values = [];
         $errors = [];
@@ -434,7 +405,7 @@ class Ps_Admin_Panel_Legacy extends Module implements WidgetInterface
         foreach ($this->fields as $key => $field) {
             foreach ($this->languages as $lang) {
                 if ($field['type'] === 'image') {
-                    $uploaded = $this->uploadImage($key, (int) $lang['id_lang']);
+                    $uploaded = $this->imageHandler->uploadImage($key, (int) $lang['id_lang']);
 
                     if (true === $uploaded['success']) {
                         $uploaded = $uploaded['filename'];
@@ -453,7 +424,7 @@ class Ps_Admin_Panel_Legacy extends Module implements WidgetInterface
                     [
                         '%key%' => $key
                     ],
-                    $this->domain
+                    PS_ADMIN_PANEL_LEGACY_DOMAIN
                 );
             }
         }
@@ -468,107 +439,18 @@ class Ps_Admin_Panel_Legacy extends Module implements WidgetInterface
             }
 
             return $this->displayError(
-                $this->trans('Some settings could not be updated. Please check the logs for more details.', [], $this->domain)
+                $this->trans(
+                    'Some settings could not be updated. Please check the logs for more details.',
+                    [],
+                    PS_ADMIN_PANEL_LEGACY_DOMAIN
+                )
             );
         }
 
         // If everything is successful, display a success message.
         return $this->displayConfirmation(
-            $this->trans('The settings have been updated.', [], $this->domain)
+            $this->trans('The settings have been updated.', [], PS_ADMIN_PANEL_LEGACY_DOMAIN)
         );
-    }
-
-    /**
-     * This method is used to upload an image.
-     * It is called when the form is submitted.
-     *
-     * @param string $key
-     * @param int $lang
-     *
-     * @return array
-     */
-    private function uploadImage(string $key = '', int $lang = 0): array
-    {
-        if (
-            isset($_FILES[$key . '_' . $lang])
-            && isset($_FILES[$key . '_' . $lang]['tmp_name'])
-            && !empty($_FILES[$key . '_' . $lang]['tmp_name'])
-        ) {
-            if ($error = ImageManager::validateUpload($_FILES[$key . '_' . $lang], 4000000)) {
-                return [
-                    'success' => false,
-                    'filename' => '',
-                    'error' => $error,
-                ];
-            }
-
-            $ext = substr(
-                $_FILES[$key . '_' . $lang]['name'],
-                strrpos($_FILES[$key . '_' . $lang]['name'], '.') + 1
-            );
-            $file = md5($_FILES[$key . '_' . $lang]['name']) . '.' . $ext;
-
-            if (
-                false === move_uploaded_file(
-                    $_FILES[$key . '_' . $lang]['tmp_name'],
-                    dirname(__FILE__) . DIRECTORY_SEPARATOR . 'upload' . DIRECTORY_SEPARATOR . $file
-                )
-            ) {
-                return [
-                    'success' => false,
-                    'filename' => '',
-                    'error' => $this->trans(
-                        'An error occurred while attempting to run move_uploaded_file in the language: ' . $lang,
-                        [],
-                        $this->domain
-                    ),
-                ];
-            }
-
-            // Delete old image.
-            if (
-                Configuration::hasContext($key, $lang, Shop::getContext())
-                && Configuration::get($key, $lang) != $file
-            ) {
-                @unlink(
-                    dirname(__FILE__) . DIRECTORY_SEPARATOR . 'upload' . DIRECTORY_SEPARATOR . Configuration::get(
-                        $key,
-                        $lang
-                    )
-                );
-            }
-
-            return [
-                'success' => true,
-                'filename' => $file,
-                'error' => '',
-            ];
-        }
-
-        return [
-            'success' => true,
-            'filename' => Configuration::get($key, $lang),
-            'error' => '',
-        ];
-    }
-
-    /**
-     * This method is used to delete all images in the images folder.
-     * It is called when the module is uninstalled.
-     *
-     * @return void
-     */
-    private function deleteImages(): void
-    {
-        $directory = dirname(__FILE__) . '/upload/';
-        if (!is_dir($directory)) {
-            return;
-        }
-
-        $images = glob($directory . '*.{jpg,jpeg,png,gif,webp}', GLOB_BRACE);
-        if ($images) {
-            array_map('unlink', $images);
-        }
     }
 
     /**
