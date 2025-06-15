@@ -21,8 +21,13 @@
 
 declare(strict_types=1);
 
+/** @var string PS_ADMIN_PANEL_LEGACY_UPLOAD_DIR */
 define('PS_ADMIN_PANEL_LEGACY_UPLOAD_DIR', dirname(__FILE__) . DIRECTORY_SEPARATOR . 'upload' . DIRECTORY_SEPARATOR);
+
+/** @var string PS_ADMIN_PANEL_LEGACY_DOMAIN */
 const PS_ADMIN_PANEL_LEGACY_DOMAIN = 'Modules.Psadminpanellegacy.Admin';
+
+/** @var array PS_ADMIN_PANEL_LEGACY_FIELDS */
 const PS_ADMIN_PANEL_LEGACY_FIELDS = [
     'PS_ADMIN_PANEL_LEGACY_TITLE' => [
         'machine_name' => 'title',
