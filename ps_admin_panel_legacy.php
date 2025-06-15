@@ -83,7 +83,7 @@ class Ps_Admin_Panel_Legacy extends Module implements WidgetInterface
         $this->fields = PS_ADMIN_PANEL_LEGACY_FIELDS;
 
         // Initialize the image handler.
-        $this->imageHandler = new ImageHandler(PS_ADMIN_PANEL_LEGACY_DOMAIN);
+        $this->imageHandler = new ImageHandler(PS_ADMIN_PANEL_LEGACY_UPLOAD_DIR);
 
         parent::__construct();
     }
@@ -405,7 +405,7 @@ class Ps_Admin_Panel_Legacy extends Module implements WidgetInterface
         foreach ($this->fields as $key => $field) {
             foreach ($this->languages as $lang) {
                 if ($field['type'] === 'image') {
-                    $uploaded = $this->imageHandler->uploadImage($key, (int) $lang['id_lang']);
+                    $uploaded = $this->imageHandler->uploadImage($_FILES, $key, (int) $lang['id_lang']);
 
                     if (true === $uploaded['success']) {
                         $uploaded = $uploaded['filename'];
