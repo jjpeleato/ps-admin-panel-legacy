@@ -38,12 +38,12 @@ if (!defined('_PS_VERSION_')) {
 // phpcs:enable
 
 /**
- * ImageHandler class for managing image uploads.
+ * HelperImage class for managing image uploads.
  *
  * This class provides functionality to handle image uploads, including
  * creating the upload directory if it does not exist.
  */
-class ImageHandler
+class HelperImage
 {
     /**
      * Maximum file size for image uploads.
@@ -64,7 +64,7 @@ class ImageHandler
     private array $authMimeType = [];
 
     /**
-     * Constructor for the ImageHandler class.
+     * Constructor for the HelperImage class.
      *
      * This constructor initializes the allowed image extensions.
      * It is called when an instance of the class is created.

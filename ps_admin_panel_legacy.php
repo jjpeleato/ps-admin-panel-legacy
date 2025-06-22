@@ -29,7 +29,7 @@ if (true === file_exists(__DIR__ . '/vendor/autoload.php')) {
 }
 // phpcs:enable
 
-use PrestaShop\Module\PsAdminPanelLegacy\Native\Classes\ImageHandler;
+use PrestaShop\Module\PsAdminPanelLegacy\Native\Classes\HelperImage;
 use PrestaShop\PrestaShop\Core\Module\WidgetInterface;
 
 /**
@@ -50,8 +50,8 @@ class Ps_Admin_Panel_Legacy extends Module implements WidgetInterface
     /** @var array $fields */
     private array $fields = [];
 
-    /** @var ImageHandler $imageHandler */
-    private ImageHandler $imageHandler;
+    /** @var HelperImage $helperImage */
+    private HelperImage $helperImage;
 
     /**
      * Ps_Admin_Panel_Legacy constructor.
@@ -83,7 +83,7 @@ class Ps_Admin_Panel_Legacy extends Module implements WidgetInterface
         $this->fields = PS_ADMIN_PANEL_LEGACY_FIELDS;
 
         // Initialize the image handler.
-        $this->imageHandler = new ImageHandler(PS_ADMIN_PANEL_LEGACY_UPLOAD_DIR);
+        $this->helperImage = new HelperImage(PS_ADMIN_PANEL_LEGACY_UPLOAD_DIR);
 
         parent::__construct();
     }
@@ -202,7 +202,7 @@ class Ps_Admin_Panel_Legacy extends Module implements WidgetInterface
         }
 
         // Delete all images in the images folder.
-        $this->imageHandler->deleteImages();
+        $this->helperImage->deleteImages();
 
         // Uninstall the tab in the back office.
         $this->uninstallTab();
@@ -405,7 +405,7 @@ class Ps_Admin_Panel_Legacy extends Module implements WidgetInterface
         foreach ($this->fields as $key => $field) {
             foreach ($this->languages as $lang) {
                 if ($field['type'] === 'image') {
-                    $uploaded = $this->imageHandler->uploadImage($_FILES, $key, (int) $lang['id_lang']);
+                    $uploaded = $this->helperImage->uploadImage($_FILES, $key, (int) $lang['id_lang']);
 
                     if (true === $uploaded['success']) {
                         $uploaded = $uploaded['filename'];
