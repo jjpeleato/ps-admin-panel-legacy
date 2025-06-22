@@ -43,34 +43,35 @@ use Tab;
  */
 class TabInstaller
 {
+    /** @var string $name */
+    private string $name = '';
+
     /**
      * TabInstaller constructor.
      *
-     * This constructor is intentionally left empty as no initialization is required.
+     * @param string $name The name of the tab to be installed.
      */
-    public function __construct()
+    public function __construct($name = '')
     {
-        // Constructor intentionally left empty.
+        $this->name = $name;
     }
 
     /**
      * This method is used to install the tab in the back office.
      * It is called when the module is installed.
      *
-     * @param string $name The name of the tab to be installed.
-     *
      * @return bool Returns true if the tab was successfully installed, false otherwise.
      */
-    public function installTab($name = ''): bool
+    public function installTab(): bool
     {
         $tab = new Tab();
         $tab->active = true;
-        $tab->class_name = 'AdminPanelLegacy';
+        $tab->class_name = PS_ADMIN_PANEL_LEGACY_NAME;
         $tab->id_parent = -1;
-        $tab->module = $name;
+        $tab->module = $this->name;
 
         foreach (Language::getLanguages(true) as $lang) {
-            $tab->name[$lang['id_lang']] = $name;
+            $tab->name[$lang['id_lang']] = $this->name;
         }
 
         return $tab->add();
@@ -84,7 +85,7 @@ class TabInstaller
      */
     public function uninstallTab(): bool
     {
-        $id_tab = Tab::getIdFromClassName('AdminPanelLegacy');
+        $id_tab = Tab::getIdFromClassName(PS_ADMIN_PANEL_LEGACY_NAME);
         $tab = new Tab($id_tab);
 
         return $tab->delete();

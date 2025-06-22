@@ -25,6 +25,9 @@ declare(strict_types=1);
 define('PS_ADMIN_PANEL_LEGACY_UPLOAD_DIR', dirname(__FILE__) . DIRECTORY_SEPARATOR . 'upload' . DIRECTORY_SEPARATOR);
 
 /** @var string PS_ADMIN_PANEL_LEGACY_DOMAIN */
+const PS_ADMIN_PANEL_LEGACY_NAME = 'AdminPanelLegacy';
+
+/** @var string PS_ADMIN_PANEL_LEGACY_DOMAIN */
 const PS_ADMIN_PANEL_LEGACY_DOMAIN = 'Modules.Psadminpanellegacy.Admin';
 
 /** @var array PS_ADMIN_PANEL_LEGACY_FIELDS */

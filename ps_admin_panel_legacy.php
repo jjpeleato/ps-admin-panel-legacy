@@ -95,7 +95,7 @@ class Ps_Admin_Panel_Legacy extends Module implements WidgetInterface
         $this->fields = PS_ADMIN_PANEL_LEGACY_FIELDS;
 
         // Initialize the tab installer.
-        $this->tabInstaller = new TabInstaller();
+        $this->tabInstaller = new TabInstaller($this->name);
 
         // Initialize the installer.
         $this->installer = new Installer($this->shops, $this->languages, $this->fields);
@@ -222,8 +222,8 @@ class Ps_Admin_Panel_Legacy extends Module implements WidgetInterface
     private function addJsDefList()
     {
         Media::addJsDef([
-            'psapl_controller_delete_url' => $this->context->link->getAdminLink('AdminPanelLegacy'),
-            'psapl_controller_delete' => 'AdminPanelLegacy',
+            'psapl_controller_delete_url' => $this->context->link->getAdminLink(PS_ADMIN_PANEL_LEGACY_NAME),
+            'psapl_controller_delete' => PS_ADMIN_PANEL_LEGACY_NAME,
         ]);
     }
 
