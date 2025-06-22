@@ -1,0 +1,92 @@
+<?php
+
+/**
+ * Copyright since 2007 PrestaShop SA and Contributors
+ * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Academic Free License version 3.0
+ * that is bundled with this package in the file LICENSE.md.
+ * It is also available through the world-wide-web at this URL:
+ * https://opensource.org/licenses/AFL-3.0
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to license@prestashop.com so we can send you a copy immediately.
+ *
+ * @author    PrestaShop SA and Contributors <contact@prestashop.com>
+ * @copyright Since 2007 PrestaShop SA and Contributors
+ * @license   https://opensource.org/licenses/AFL-3.0 Academic Free License version 3.0
+ */
+
+declare(strict_types=1);
+
+namespace PrestaShop\Module\PsAdminPanelLegacy\Native\Classes;
+
+// phpcs:disable
+/**
+ * If this file is called directly, then abort execution.
+ */
+if (!defined('_PS_VERSION_')) {
+    exit;
+}
+// phpcs:enable
+
+use Language;
+use Tab;
+
+/**
+ * Class TabInstaller
+ *
+ * This class is responsible for installing and uninstalling a tab in the back office.
+ * It provides methods to add and remove a tab with the class name 'AdminPanelLegacy'.
+ */
+class TabInstaller
+{
+    /**
+     * TabInstaller constructor.
+     *
+     * This constructor is intentionally left empty as no initialization is required.
+     */
+    public function __construct()
+    {
+        // Constructor intentionally left empty.
+    }
+
+    /**
+     * This method is used to install the tab in the back office.
+     * It is called when the module is installed.
+     *
+     * @param string $name The name of the tab to be installed.
+     *
+     * @return bool Returns true if the tab was successfully installed, false otherwise.
+     */
+    public function installTab($name = ''): bool
+    {
+        $tab = new Tab();
+        $tab->active = true;
+        $tab->class_name = 'AdminPanelLegacy';
+        $tab->id_parent = -1;
+        $tab->module = $name;
+
+        foreach (Language::getLanguages(true) as $lang) {
+            $tab->name[$lang['id_lang']] = $name;
+        }
+
+        return $tab->add();
+    }
+
+    /**
+     * This method is used to uninstall the tab in the back office.
+     * It is called when the module is uninstalled.
+     *
+     * @return bool Returns true if the tab was successfully uninstalled, false otherwise.
+     */
+    public function uninstallTab(): bool
+    {
+        $id_tab = Tab::getIdFromClassName('AdminPanelLegacy');
+        $tab = new Tab($id_tab);
+
+        return $tab->delete();
+    }
+}
