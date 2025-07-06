@@ -212,7 +212,8 @@ class HelperFormExtended
                         $errors[] = $uploaded['error'];
                     }
                 } else {
-                    if ($field['required'] === true && Tools::getValue($key . '_' . $lang['id_lang']) === '') {
+                    $value = Tools::getValue($key . '_' . $lang['id_lang']);
+                    if (true === $field['required'] && true === empty($value)) {
                         $errors[] = $this->translator->trans(
                             'The field "%field%" is required.',
                             [
@@ -222,7 +223,7 @@ class HelperFormExtended
                         );
                     }
 
-                    $values[$key][$lang['id_lang']] = Tools::getValue($key . '_' . $lang['id_lang']);
+                    $values[$key][$lang['id_lang']] = $value;
                 }
             }
 
