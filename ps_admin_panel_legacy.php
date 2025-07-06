@@ -29,7 +29,10 @@ if (true === file_exists(__DIR__ . '/vendor/autoload.php')) {
 }
 // phpcs:enable
 
-use PrestaShop\Module\PsAdminPanelLegacy\Native\Classes\ImageHandler;
+use PrestaShop\Module\PsAdminPanelLegacy\Native\Classes\HelperFormExtended;
+use PrestaShop\Module\PsAdminPanelLegacy\Native\Classes\Installer;
+use PrestaShop\Module\PsAdminPanelLegacy\Native\Classes\TabInstaller;
+use PrestaShop\Module\PsAdminPanelLegacy\Native\Classes\Uninstaller;
 use PrestaShop\PrestaShop\Core\Module\WidgetInterface;
 
 /**
@@ -50,8 +53,17 @@ class Ps_Admin_Panel_Legacy extends Module implements WidgetInterface
     /** @var array $fields */
     private array $fields = [];
 
-    /** @var ImageHandler $imageHandler */
-    private ImageHandler $imageHandler;
+    /** @var TabInstaller $tabInstaller */
+    private TabInstaller $tabInstaller;
+
+    /** @var Installer $installer */
+    private Installer $installer;
+
+    /** @var Uninstaller $uninstaller */
+    private Uninstaller $uninstaller;
+
+    /** @var HelperFormExtended $helperFormExtended */
+    private HelperFormExtended $helperFormExtended;
 
     /**
      * Ps_Admin_Panel_Legacy constructor.
@@ -82,8 +94,17 @@ class Ps_Admin_Panel_Legacy extends Module implements WidgetInterface
         $this->languages = Language::getLanguages(false);
         $this->fields = PS_ADMIN_PANEL_LEGACY_FIELDS;
 
-        // Initialize the image handler.
-        $this->imageHandler = new ImageHandler(PS_ADMIN_PANEL_LEGACY_UPLOAD_DIR);
+        // Initialize the tab installer.
+        $this->tabInstaller = new TabInstaller($this->name);
+
+        // Initialize the installer.
+        $this->installer = new Installer($this->shops, $this->languages, $this->fields);
+
+        // Initialize the uninstaller.
+        $this->uninstaller = new Uninstaller($this->fields);
+
+        // Initialize the helper form extended.
+        $this->helperFormExtended = new HelperFormExtended($this->languages, $this->fields);
 
         parent::__construct();
     }
@@ -107,80 +128,11 @@ class Ps_Admin_Panel_Legacy extends Module implements WidgetInterface
      */
     public function install(): bool
     {
-        return parent::install() &&
-            $this->installTab() &&
-            $this->installShopFixtures();
-    }
-
-    /**
-     * This method is used to install a tab in the back office.
-     * It is called when the module is installed.
-     *
-     * @return bool
-     */
-    protected function installTab()
-    {
-        $tab = new Tab();
-        $tab->active = true;
-        $tab->class_name = 'AdminPanelLegacy';
-        $tab->id_parent = -1;
-        $tab->module = $this->name;
-
-        foreach (Language::getLanguages(true) as $lang) {
-            $tab->name[$lang['id_lang']] = $this->name;
-        }
-
-        return $tab->add();
-    }
-
-    /**
-     * This method is used to install the module fixtures.
-     * It is called when the module is installed.
-     *
-     * @return bool
-     */
-    protected function installShopFixtures(): bool
-    {
-        foreach ($this->shops as $shop) {
-            $idShopGroup = (int) $shop['id_shop_group'];
-            $idShop = (int) $shop['id_shop'];
-
-            foreach ($this->languages as $lang) {
-                $idLang = (int) $lang['id_lang'];
-
-                if (!$this->installLanguageFixture($idLang, $idShopGroup, $idShop)) {
-                    return false;
-                }
-            }
-        }
-
         PrestaShopLogger::addLog("Installed module: $this->name", 1);
 
-        return true;
-    }
-
-    /**
-     * This method is used to install a fixture for the module.
-     * It is called when the module is installed.
-     *
-     * @param int $idLang
-     * @param int $idShopGroup
-     * @param int $idShop
-     */
-    protected function installLanguageFixture(int $idLang = 0, int $idShopGroup = 0, int $idShop = 0): bool
-    {
-        foreach ($this->fields as $key => $field) {
-            if (!Configuration::updateValue($key, [$idLang => $field['value']], false, $idShopGroup, $idShop)) {
-                PrestaShopLogger::addLog(
-                    "Failed to update configuration key: $key for shop $idShop and language $idLang",
-                    3
-                );
-
-                return false;
-            }
-        }
-
-        return true;
+        return parent::install() &&
+            $this->tabInstaller->installTab() &&
+            $this->installer->installShopFixtures();
     }
 
     /**
@@ -193,37 +145,13 @@ class Ps_Admin_Panel_Legacy extends Module implements WidgetInterface
      */
     public function uninstall(): bool
     {
-        $this->_clearCache('*'); // Clear module cache
-
-        foreach (array_keys($this->fields) as $field) {
-            if (!Configuration::deleteByName($field)) {
-                return false; // Stop if any deletion fails
-            }
-        }
-
-        // Delete all images in the images folder.
-        $this->imageHandler->deleteImages();
-
-        // Uninstall the tab in the back office.
-        $this->uninstallTab();
-
         PrestaShopLogger::addLog("Uninstalled module: $this->name", 1);
 
-        return parent::uninstall();
-    }
+        $this->_clearCache('*'); // Clear module cache
 
-    /**
-     * This method is used to uninstall the tab in the back office.
-     * It is called when the module is uninstalled.
-     *
-     * @return bool
-     */
-    protected function uninstallTab()
-    {
-        $id_tab = Tab::getIdFromClassName('AdminPanelLegacy');
-        $tab = new Tab($id_tab);
-
-        return $tab->delete();
+        return parent::uninstall() &&
+            $this->tabInstaller->uninstallTab() &&
+            $this->uninstaller->uninstall();
     }
 
     /**
@@ -256,15 +184,33 @@ class Ps_Admin_Panel_Legacy extends Module implements WidgetInterface
          */
         $output = '';
         if (Tools::isSubmit('submit_' . $this->name)) {
-            $output = $this->postProcess();
+            $postProcess = $this->helperFormExtended->postProcess();
+
+            if ($postProcess === true) {
+                $output = $this->displayConfirmation(
+                    $this->trans('The settings have been updated.', [], PS_ADMIN_PANEL_LEGACY_DOMAIN)
+                );
+            } else {
+                $output = $this->displayError(
+                    $this->trans(
+                        'Some settings could not be updated. Please check the logs for more details.',
+                        [],
+                        PS_ADMIN_PANEL_LEGACY_DOMAIN
+                    )
+                );
+            }
+
+            // Clear the cache after updating the configuration.
+            $this->_clearCache('*');
         }
 
         /**
          * Render all templates.
          */
-        $renderTemplate = $this->context->smarty->fetch('module:ps_admin_panel_legacy/views/templates/admin/index.tpl');
+        $renderForm = $this->helperFormExtended->renderForm($this, $this->table, $this->name, $this->identifier, $this->getPathUri());
+        $renderTemplate = $this->context->smarty->fetch('module:' . $this->name . '/views/templates/admin/index.tpl');
 
-        return $output . $this->renderForm() . $renderTemplate;
+        return $output . $renderForm . $renderTemplate;
     }
 
     /**
@@ -273,184 +219,12 @@ class Ps_Admin_Panel_Legacy extends Module implements WidgetInterface
      *
      * @return void
      */
-    protected function addJsDefList()
+    private function addJsDefList()
     {
         Media::addJsDef([
-            'psapl_controller_delete_url' => $this->context->link->getAdminLink('AdminPanelLegacy'),
-            'psapl_controller_delete' => 'AdminPanelLegacy',
+            'psapl_controller_delete_url' => $this->context->link->getAdminLink(PS_ADMIN_PANEL_LEGACY_NAME),
+            'psapl_controller_delete' => PS_ADMIN_PANEL_LEGACY_NAME,
         ]);
-    }
-
-    /**
-     * This method is used to render the form.
-     * It is called when the module is displayed in the back office.
-     *
-     * @see https://devdocs.prestashop-project.org/8/development/components/helpers/helperform/#attributes
-     *
-     * @return string
-     */
-    protected function renderForm()
-    {
-        $helper = new HelperForm();
-
-        // Module, table, name_controller, token and currentIndex.
-        $helper->module = $this;
-        $helper->table = $this->table;
-        $helper->name_controller = $this->name;
-        $helper->token = Tools::getAdminTokenLite('AdminModules');
-        $helper->currentIndex = AdminController::$currentIndex . '&' . http_build_query(['configure' => $this->name]);
-
-        // Default language and languages.
-        $helper->default_form_language = (int) Configuration::get('PS_LANG_DEFAULT');
-        $helper->languages = $this->context->controller->getLanguages();
-
-        // Submit and identifier.
-        $helper->identifier = $this->identifier;
-        $helper->submit_action = 'submit_' . $this->name;
-
-        // Load current value into the form.
-        $helper->tpl_vars = [
-            'uri' => $this->getPathUri(),
-            'fields_value' => $this->getConfigFieldsValues(),
-            'languages' => $this->context->controller->getLanguages(),
-        ];
-
-        return $helper->generateForm([$this->getConfigForm()]);
-    }
-
-    /**
-     * Get configuration form.
-     *
-     * @see https://devdocs.prestashop-project.org/8/development/components/helpers/helperform/#basic-usage
-     *
-     * @return array
-     */
-    protected function getConfigForm(): array
-    {
-        $form = [
-            'form' => [
-                'tinymce' => true,
-                'legend' => [
-                    'title' => $this->trans('Settings', [], PS_ADMIN_PANEL_LEGACY_DOMAIN),
-                    'icon' => 'icon-cogs'
-                ],
-                'submit' => [
-                    'title' => $this->trans('Save', [], PS_ADMIN_PANEL_LEGACY_DOMAIN),
-                ],
-            ],
-        ];
-
-        // Add fields to the form.
-        foreach ($this->fields as $key => $field) {
-            $form['form']['input'][$field['machine_name']] = [
-                'type' => $field['type'],
-                'lang' => $field['lang'],
-                'required' => $field['required'],
-                'label' => $field['label'],
-                'name' => $key,
-                'desc' => $field['desc'],
-            ];
-
-            if ($field['type'] === 'html') {
-                $form['form']['input'][$field['machine_name']]['type'] = 'textarea';
-                $form['form']['input'][$field['machine_name']]['autoload_rte'] = true;
-                $form['form']['input'][$field['machine_name']]['cols'] = 75;
-                $form['form']['input'][$field['machine_name']]['rows'] = 75;
-                $form['form']['input'][$field['machine_name']]['class'] = 'rte';
-                $form['form']['input'][$field['machine_name']]['autoload_rte'] = true;
-            }
-
-            if ($field['type'] === 'image') {
-                $form['form']['input'][$field['machine_name']]['type'] = 'image_lang';
-            }
-        }
-
-        return $form;
-    }
-
-    /**
-     * Get configuration fields values.
-     *
-     * @return array
-     */
-    protected function getConfigFieldsValues(): array
-    {
-        $fields = [];
-
-        foreach ($this->languages as $lang) {
-            $idLang = (int) $lang['id_lang'];
-
-            foreach (array_keys($this->fields) as $key) {
-                $fields[$key][$idLang] = Tools::getValue(
-                    $key . '_' . $idLang,
-                    Configuration::get($key, $idLang)
-                );
-            }
-        }
-
-        return $fields;
-    }
-
-    /**
-     * This method is used to process the form submission.
-     * It is called when the form is submitted.
-     *
-     * @return string
-     */
-    protected function postProcess(): string
-    {
-        $values = [];
-        $errors = [];
-
-        foreach ($this->fields as $key => $field) {
-            foreach ($this->languages as $lang) {
-                if ($field['type'] === 'image') {
-                    $uploaded = $this->imageHandler->uploadImage($_FILES, $key, (int) $lang['id_lang']);
-
-                    if (true === $uploaded['success']) {
-                        $uploaded = $uploaded['filename'];
-                        $values[$key][$lang['id_lang']] = $uploaded;
-                    } else {
-                        $errors[] = $uploaded['error'];
-                    }
-                } else {
-                    $values[$key][$lang['id_lang']] = Tools::getValue($key . '_' . $lang['id_lang']);
-                }
-            }
-
-            if (!Configuration::updateValue($key, $values[$key], true)) {
-                $errors[] = $this->trans(
-                    'Failed to update configuration for key "%key%".',
-                    [
-                        '%key%' => $key
-                    ],
-                    PS_ADMIN_PANEL_LEGACY_DOMAIN
-                );
-            }
-        }
-
-        // Clear the cache after updating the configuration.
-        $this->_clearCache('*');
-
-        // If there are errors, display them.
-        if (!empty($errors)) {
-            foreach ($errors as $error) {
-                PrestaShopLogger::addLog($error, 3);
-            }
-
-            return $this->displayError(
-                $this->trans(
-                    'Some settings could not be updated. Please check the logs for more details.',
-                    [],
-                    PS_ADMIN_PANEL_LEGACY_DOMAIN
-                )
-            );
-        }
-
-        // If everything is successful, display a success message.
-        return $this->displayConfirmation(
-            $this->trans('The settings have been updated.', [], PS_ADMIN_PANEL_LEGACY_DOMAIN)
-        );
     }
 
     /**
@@ -474,7 +248,7 @@ class Ps_Admin_Panel_Legacy extends Module implements WidgetInterface
         $this->smarty->assign([
             'path' => $this->_path,
         ]);
-        return $this->fetch('module:ps_admin_panel_legacy/views/templates/widget/index.tpl');
+        return $this->fetch('module:' . $this->name . '/views/templates/widget/index.tpl');
     }
 
     /**
