@@ -38,9 +38,6 @@ if (!defined('_PS_VERSION_')) {
  */
 class AdminPanelLegacyController extends ModuleAdminController
 {
-    /** @var ps_admin_panel_legacy */
-    public $module;
-
     /**
      * AdminPanelLegacyController constructor.
      */

@@ -85,6 +85,7 @@ class TabInstaller
      */
     public function uninstallTab(): bool
     {
+        // PrestaShopBundle\Entity\Repository\TabRepository::findOneIdByClassName($className) is not a static method.
         $id_tab = Tab::getIdFromClassName(PS_ADMIN_PANEL_LEGACY_NAME);
         $tab = new Tab($id_tab);
 
