@@ -136,7 +136,7 @@ class HelperFormExtended
         // Add fields to the form.
         foreach ($this->fields as $key => $field) {
             $form['form']['input'][$field['machine_name']] = [
-                'type' => $field['type'],
+                'type' => 'text',
                 'lang' => $field['lang'],
                 'required' => $field['required'],
                 'label' => $field['label'],
@@ -144,9 +144,29 @@ class HelperFormExtended
                 'desc' => $field['desc'],
             ];
 
-            if (false === empty($field['tab'])) {
+            if (empty($field['tab']) === false) {
                 $form['form']['tabs'][$field['tab']] = $field['tab'];
                 $form['form']['input'][$field['machine_name']]['tab'] = $field['tab'];
+            }
+
+            if ($field['type'] === 'switch') {
+                $form['form']['input'][$field['machine_name']]['type'] = 'switch';
+                $form['form']['input'][$field['machine_name']]['lang'] = false;
+                $form['form']['input'][$field['machine_name']]['required'] = false;
+                $form['form']['input'][$field['machine_name']]['class'] = 't';
+                $form['form']['input'][$field['machine_name']]['is_bool'] = true;
+                $form['form']['input'][$field['machine_name']]['values'] = [
+                    [
+                        'id' => $field['machine_name'] . '_on',
+                        'value' => 1,
+                        'label' => $this->translator->trans('Enabled', [], PS_ADMIN_PANEL_LEGACY_DOMAIN),
+                    ],
+                    [
+                        'id' => $field['machine_name'] . '_off',
+                        'value' => 0,
+                        'label' => $this->translator->trans('Disabled', [], PS_ADMIN_PANEL_LEGACY_DOMAIN),
+                    ]
+                ];
             }
 
             if ($field['type'] === 'html') {
@@ -160,6 +180,7 @@ class HelperFormExtended
 
             if ($field['type'] === 'image') {
                 $form['form']['input'][$field['machine_name']]['type'] = 'image_lang';
+                $form['form']['input'][$field['machine_name']]['lang'] = true;
             }
         }
 
@@ -175,14 +196,15 @@ class HelperFormExtended
     {
         $fields = [];
 
-        foreach ($this->languages as $lang) {
-            $idLang = (int) $lang['id_lang'];
+        foreach ($this->fields as $key => $field) {
+            if ($field['lang'] === false) {
+                $fields[$key] = Configuration::get($key, null);
+                continue;
+            }
 
-            foreach (array_keys($this->fields) as $key) {
-                $fields[$key][$idLang] = Tools::getValue(
-                    $key . '_' . $idLang,
-                    Configuration::get($key, $idLang)
-                );
+            foreach ($this->languages as $lang) {
+                $idLang = (int) $lang['id_lang'];
+                $fields[$key][$idLang] = Configuration::get($key, $idLang);
             }
         }
 
@@ -197,36 +219,51 @@ class HelperFormExtended
      */
     public function postProcess(): bool
     {
-        $values = [];
-        $errors = [];
+        $response = [];
 
         foreach ($this->fields as $key => $field) {
-            foreach ($this->languages as $lang) {
-                if ($field['type'] === 'image') {
-                    $uploaded = $this->imageHandler->uploadImage($_FILES, $key, (int) $lang['id_lang']);
-
-                    if (true === $uploaded['success']) {
-                        $uploaded = $uploaded['filename'];
-                        $values[$key][$lang['id_lang']] = $uploaded;
-                    } else {
-                        $errors[] = $uploaded['error'];
-                    }
-                } else {
-                    $value = Tools::getValue($key . '_' . $lang['id_lang']);
-                    if (true === $field['required'] && true === empty($value)) {
-                        $errors[] = $this->translator->trans(
-                            'The field "%field%" is required.',
-                            [
-                                '%field%' => $field['label']
-                            ],
-                            PS_ADMIN_PANEL_LEGACY_DOMAIN
-                        );
-                    }
-
-                    $values[$key][$lang['id_lang']] = $value;
-                }
+            if ($field['lang'] === true) {
+                $response[$key] = $this->saveDataWithLanguage($key, $field);
+            } else {
+                $response[$key] = $this->saveDataWithoutLanguage($key, $field);
             }
+        }
 
+        return true;
+    }
+
+    /**
+     * TODO: Short description.
+     */
+    private function saveDataWithLanguage(string $key = '', array $field = []): bool
+    {
+        $errors = [];
+
+        foreach ($this->languages as $lang) {
+            if ($field['type'] === 'image') {
+                $uploaded = $this->imageHandler->uploadImage($_FILES, $key, (int) $lang['id_lang']);
+
+                if ($uploaded['success'] === true) {
+                    $uploaded = $uploaded['filename'];
+                    $values[$key][$lang['id_lang']] = $uploaded;
+                } else {
+                    $errors[] = $uploaded['error'];
+                }
+            } else {
+                $value = Tools::getValue($key . '_' . $lang['id_lang']);
+                $values[$key][$lang['id_lang']] = $value;
+            }
+        }
+
+        if ($field['required'] === true && empty($value) === true) {
+            $errors[] = $this->translator->trans(
+                'The field "%field%" is required.',
+                [
+                    '%field%' => $field['label']
+                ],
+                PS_ADMIN_PANEL_LEGACY_DOMAIN
+            );
+        } else {
             if (!Configuration::updateValue($key, $values[$key], true)) {
                 $errors[] = $this->translator->trans(
                     'Failed to update configuration for key "%key%".',
@@ -245,6 +282,37 @@ class HelperFormExtended
             }
 
             return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * TODO: Short description.
+     */
+    private function saveDataWithoutLanguage(string $key = '', array $field = []): bool
+    {
+        $value = Tools::getValue($key);
+        $values[$key] = $value;
+
+        if ($field['required'] === true && empty($value) === true) {
+            $errors[] = $this->translator->trans(
+                'The field "%field%" is required.',
+                [
+                    '%field%' => $field['label']
+                ],
+                PS_ADMIN_PANEL_LEGACY_DOMAIN
+            );
+        } else {
+            if (!Configuration::updateValue($key, $values[$key], true)) {
+                $errors[] = $this->translator->trans(
+                    'Failed to update configuration for key "%key%".',
+                    [
+                        '%key%' => $key
+                    ],
+                    PS_ADMIN_PANEL_LEGACY_DOMAIN
+                );
+            }
         }
 
         return true;

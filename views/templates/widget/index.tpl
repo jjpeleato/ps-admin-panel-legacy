@@ -16,27 +16,29 @@
  * @copyright Since 2007 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/AFL-3.0 Academic Free License version 3.0
  *}
-<div class="container">
-  <div class="row">
-    <div class="col-12">
-      {if false === empty($title)}
-        <h3>{$title}</h3>
-      {/if}
-      {if false === empty($short_description)}
-        <div class="description">
-          {$short_description nofilter}
-        </div>
-      {/if}
-      {if false === empty($description)}
-        <div class="description">
-          {$description nofilter}
-        </div>
-      {/if}
-      {if false === empty($image)}
-        <div class="image">
-          <img src="{$path}/upload/{$image}" alt="{$title}" title="{$title}" />
-        </div>
-      {/if}
+{if empty($display) === false}
+  <div class="container">
+    <div class="row">
+      <div class="col-12">
+        {if empty($title) === false}
+          <h3>{$title}</h3>
+        {/if}
+        {if empty($short_description) === false}
+          <div class="description">
+            {$short_description nofilter}
+          </div>
+        {/if}
+        {if empty($description) === false}
+          <div class="description">
+            {$description nofilter}
+          </div>
+        {/if}
+        {if empty($image) === false}
+          <div class="image">
+            <img src="{$path}/upload/{$image}" alt="{$image_alt}" title="{$image_alt}" />
+          </div>
+        {/if}
+      </div>
     </div>
   </div>
-</div>
+{/if}

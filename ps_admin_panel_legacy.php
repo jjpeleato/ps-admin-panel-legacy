@@ -24,7 +24,7 @@ if (!defined('_PS_VERSION_')) {
     exit;
 }
 
-if (true === file_exists(__DIR__ . '/vendor/autoload.php')) {
+if (file_exists(__DIR__ . '/vendor/autoload.php') === true) {
     require_once __DIR__ . '/vendor/autoload.php';
 }
 // phpcs:enable
@@ -253,7 +253,7 @@ class Ps_Admin_Panel_Legacy extends Module implements WidgetInterface
     public function renderWidget($hookName, array $configuration): string
     {
         $variables = $this->getWidgetVariables($hookName, $configuration);
-        if (true === empty($variables)) {
+        if (empty($variables) === true) {
             return '';
         }
 
@@ -280,6 +280,12 @@ class Ps_Admin_Panel_Legacy extends Module implements WidgetInterface
         $idLang = $this->context->language->id;
 
         foreach ($this->fields as $key => $field) {
+            if ($field['lang'] === false) {
+                // If the field is not multilingual, get the value directly.
+                $variables[$field['machine_name']] = Configuration::get($key, null);
+                continue;
+            }
+
             $variables[$field['machine_name']] = Configuration::get($key, $idLang);
         }
 
