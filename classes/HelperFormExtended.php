@@ -144,6 +144,11 @@ class HelperFormExtended
                 'desc' => $field['desc'],
             ];
 
+            if (false === empty($field['tab'])) {
+                $form['form']['tabs'][$field['tab']] = $field['tab'];
+                $form['form']['input'][$field['machine_name']]['tab'] = $field['tab'];
+            }
+
             if ($field['type'] === 'html') {
                 $form['form']['input'][$field['machine_name']]['type'] = 'textarea';
                 $form['form']['input'][$field['machine_name']]['autoload_rte'] = true;

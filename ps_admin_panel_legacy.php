@@ -208,7 +208,7 @@ class Ps_Admin_Panel_Legacy extends Module implements WidgetInterface
          * Render all templates.
          */
         $renderForm = $this->helperFormExtended->renderForm($this, $this->table, $this->name, $this->identifier, $this->getPathUri());
-        $renderTemplate = $this->context->smarty->fetch('module:ps_admin_panel_legacy/views/templates/admin/index.tpl');
+        $renderTemplate = $this->context->smarty->fetch('module:' . $this->name . '/views/templates/admin/index.tpl');
 
         return $output . $renderForm . $renderTemplate;
     }
@@ -248,7 +248,7 @@ class Ps_Admin_Panel_Legacy extends Module implements WidgetInterface
         $this->smarty->assign([
             'path' => $this->_path,
         ]);
-        return $this->fetch('module:ps_admin_panel_legacy/views/templates/widget/index.tpl');
+        return $this->fetch('module:' . $this->name . '/views/templates/widget/index.tpl');
     }
 
     /**
