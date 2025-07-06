@@ -131,6 +131,7 @@ class Ps_Admin_Panel_Legacy extends Module implements WidgetInterface
         PrestaShopLogger::addLog("Installed module: $this->name", 1);
 
         return parent::install() &&
+            $this->registerHook('actionAdminControllerSetMedia') &&
             $this->tabInstaller->installTab() &&
             $this->installer->installShopFixtures();
     }
@@ -150,8 +151,20 @@ class Ps_Admin_Panel_Legacy extends Module implements WidgetInterface
         $this->_clearCache('*'); // Clear module cache
 
         return parent::uninstall() &&
+            $this->unregisterHook('actionAdminControllerSetMedia') &&
             $this->tabInstaller->uninstallTab() &&
             $this->uninstaller->uninstall();
+    }
+
+    /**
+     * This method is used to add JavaScript files to the module.
+     * It is called when the module is displayed in the back office.
+     *
+     * @return void
+     */
+    public function hookActionAdminControllerSetMedia(): void
+    {
+        $this->context->controller->addJS(_MODULE_DIR_ . $this->name . '/views/js/custom.js');
     }
 
     /**
@@ -193,7 +206,7 @@ class Ps_Admin_Panel_Legacy extends Module implements WidgetInterface
             } else {
                 $output = $this->displayError(
                     $this->trans(
-                        'Some settings could not be updated. Please check the logs for more details.',
+                        'Some settings could not be updated. Please check the logs for more details: Advanced Parameters > Logs.',
                         [],
                         PS_ADMIN_PANEL_LEGACY_DOMAIN
                     )
