@@ -212,6 +212,16 @@ class HelperFormExtended
                         $errors[] = $uploaded['error'];
                     }
                 } else {
+                    if ($field['required'] === true && Tools::getValue($key . '_' . $lang['id_lang']) === '') {
+                        $errors[] = $this->translator->trans(
+                            'The field "%field%" is required.',
+                            [
+                                '%field%' => $field['label']
+                            ],
+                            PS_ADMIN_PANEL_LEGACY_DOMAIN
+                        );
+                    }
+
                     $values[$key][$lang['id_lang']] = Tools::getValue($key . '_' . $lang['id_lang']);
                 }
             }
