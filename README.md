@@ -33,14 +33,39 @@ For more information visit:
 - Node and NPM: https://nodejs.org/es/
 - Yarn: https://yarnpkg.com/es-ES/
 
-## Installation
+## Installation to develop
 
 1. Clone or download this repository into the `modules` directory of your PrestaShop installation.
-2. Navigate to the PrestaShop back office.
-3. Go to **Modules > Module Manager**.
-4. Search for `PrestaShop Admin Panel` and click **Install**.
+2. Navigate to the module directory:
+   ```bash
+   cd modules/ps_admin_panel_legacy
+   ```
+3. Install the dependencies using Composer:
+   ```bash
+   composer install
+   ```
+4. Install the Node.js dependencies:
+   ```bash
+   npm install --save-dev
+   ```
+5. Search and replace all occurrences with your new module name throughout the project files. Remember to activate the search: "Match uppercase and lowercase".
+  - Rename the module directory from `ps_admin_panel_legacy` to `your_new_module_name`.
+  - Rename the main module file from `ps_admin_panel_legacy.php` to `your_new_module_name.php`. Remember that both must match to work correctly.
+  - Rename `Ps_Admin_Panel_Legacy` to `Your_New_Module_Name`.
+  - Rename `ps_admin_panel_legacy` to `your_new_module_name`.
+  - Rename `PS_ADMIN_PANEL_LEGACY_` to `YOUR_NEW_MODULE_NAME_`.
+  - Rename the `AdminPanelLegacyController` file to `AdminYourNewModuleNameController`. Remember that it is mandatory to use the prefix `Admin` and the suffix `Controller`.
+  - Update the `PS_ADMIN_PANEL_LEGACY_NAME` constant in `settings.php` to use the exact same name `AdminYourNewModuleName`. Both must match for the panel to work correctly.
+  - Change the value of `PS_ADMIN_PANEL_LEGACY_DOMAIN` in `settings.php` to your new domain name: `Modules.Yournewmodulename.Admin`.
+6. Install the module in PrestaShop's back office.
+7. Clear the PrestaShop cache to ensure the module is recognized.
+8. End and happy coding!
 
-## Project structure
+### Configure file `settings.php`
+
+The `settings.php` file is the core of the module's configuration. It is used to define the structure and content of the admin panel, and should be placed in the root directory of the module.
+
+### Project structure
 
 ```
 ps_admin_panel_legacy/
