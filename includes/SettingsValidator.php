@@ -62,7 +62,7 @@ class SettingsValidator
     }
 
     /**
-     * Validates the settings structure.
+     * Validates the settings.
      *
      * @return string
      */
@@ -80,7 +80,7 @@ class SettingsValidator
     }
 
     /**
-     * Validates the fields defined in the module.
+     * Validates the fields structure.
      *
      * @return array
      */
@@ -115,6 +115,37 @@ class SettingsValidator
                         PS_ADMIN_PANEL_LEGACY_DOMAIN
                     );
                 }
+            }
+        }
+
+        // Validate if the type is valid.
+        $validTypes = ['switch', 'text', 'html', 'video', 'image'];
+        foreach ($this->fields as $key => $field) {
+            if (!in_array($field['type'], $validTypes, true)) {
+                $errors[] = $this->translator->trans(
+                    'The type "%type%" is not valid for the field "%field%". Valid types are: %validTypes%.',
+                    [
+                        '%type%' => $field['type'],
+                        '%field%' => $key,
+                        '%validTypes%' => implode(', ', $validTypes)
+                    ],
+                    PS_ADMIN_PANEL_LEGACY_DOMAIN
+                );
+            }
+        }
+
+        // Validate if lang is true for video and image types.
+        // This is a specific rule for the module.
+        foreach ($this->fields as $key => $field) {
+            if (in_array($field['type'], ['video', 'image'], true) && !$field['lang']) {
+                $errors[] = $this->translator->trans(
+                    'The field "%field%" of type "%type%" must be a lang field.',
+                    [
+                        '%field%' => $key,
+                        '%type%' => $field['type']
+                    ],
+                    PS_ADMIN_PANEL_LEGACY_DOMAIN
+                );
             }
         }
 

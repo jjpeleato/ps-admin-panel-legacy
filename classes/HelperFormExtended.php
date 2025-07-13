@@ -36,6 +36,7 @@ use AdminController;
 use Configuration;
 use Context;
 use HelperForm;
+use Module;
 use Tools;
 
 /**
@@ -63,10 +64,13 @@ class HelperFormExtended
 
     /**
      * HelperFormExtended constructor.
+     *
      * This constructor is used to initialize the HelperFormExtended class.
-     * It does not take any parameters and does not perform any actions.
+     *
+     * @param array $languages
+     * @param array $fields
      */
-    public function __construct($languages = [], $fields = [])
+    public function __construct(array $languages = [], array $fields = [])
     {
         $this->translator = Context::getContext()->getTranslator();
         $this->languages = $languages;
@@ -85,10 +89,21 @@ class HelperFormExtended
      *
      * @see https://devdocs.prestashop-project.org/8/development/components/helpers/helperform/#attributes
      *
+     * @param Module|null $module
+     * @param string $table
+     * @param string $name
+     * @param string $identifier
+     * @param string $pathUri
+     *
      * @return string
      */
-    public function renderForm($module = null, $table = '', $name = '', $identifier = '', $pathUri = ''): string
-    {
+    public function renderForm(
+        $module = null,
+        string $table = '',
+        string $name = '',
+        string $identifier = '',
+        string $pathUri = ''
+    ): string {
         $helper = new HelperForm();
 
         // Module, table, name_controller, token and currentIndex.
@@ -142,8 +157,8 @@ class HelperFormExtended
         foreach ($this->fields as $key => $field) {
             $form['form']['input'][$field['machine_name']] = [
                 'type' => 'text',
-                'lang' => $field['lang'],
-                'required' => $field['required'],
+                'lang' => is_bool($field['lang']) ? $field['lang'] : false,
+                'required' => is_bool($field['required']) ? $field['required'] : false,
                 'label' => $field['label'],
                 'name' => $key,
                 'desc' => $field['desc'],
