@@ -32,6 +32,16 @@ const PS_ADMIN_PANEL_LEGACY_DOMAIN = 'Modules.Psadminpanellegacy.Admin';
 
 /** @var array PS_ADMIN_PANEL_LEGACY_FIELDS */
 const PS_ADMIN_PANEL_LEGACY_FIELDS = [
+    'PS_ADMIN_PANEL_LEGACY_DISPLAY' => [
+        'machine_name' => 'display',
+        'tab' => 'general',
+        'type' => 'switch',
+        'lang' => false,
+        'required' => false,
+        'label' => 'Display',
+        'desc' => 'Show or hide the section.',
+        'value' => 0,
+    ],
     'PS_ADMIN_PANEL_LEGACY_TITLE' => [
         'machine_name' => 'title',
         'tab' => 'general',

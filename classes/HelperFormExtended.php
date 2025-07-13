@@ -36,7 +36,6 @@ use AdminController;
 use Configuration;
 use Context;
 use HelperForm;
-use PrestaShopLogger;
 use Tools;
 
 /**
@@ -136,7 +135,7 @@ class HelperFormExtended
         // Add fields to the form.
         foreach ($this->fields as $key => $field) {
             $form['form']['input'][$field['machine_name']] = [
-                'type' => $field['type'],
+                'type' => 'text',
                 'lang' => $field['lang'],
                 'required' => $field['required'],
                 'label' => $field['label'],
@@ -144,9 +143,29 @@ class HelperFormExtended
                 'desc' => $field['desc'],
             ];
 
-            if (false === empty($field['tab'])) {
+            if (empty($field['tab']) === false) {
                 $form['form']['tabs'][$field['tab']] = $field['tab'];
                 $form['form']['input'][$field['machine_name']]['tab'] = $field['tab'];
+            }
+
+            if ($field['type'] === 'switch') {
+                $form['form']['input'][$field['machine_name']]['type'] = 'switch';
+                $form['form']['input'][$field['machine_name']]['lang'] = false;
+                $form['form']['input'][$field['machine_name']]['required'] = false;
+                $form['form']['input'][$field['machine_name']]['class'] = 't';
+                $form['form']['input'][$field['machine_name']]['is_bool'] = true;
+                $form['form']['input'][$field['machine_name']]['values'] = [
+                    [
+                        'id' => $field['machine_name'] . '_on',
+                        'value' => 1,
+                        'label' => $this->translator->trans('Enabled', [], PS_ADMIN_PANEL_LEGACY_DOMAIN),
+                    ],
+                    [
+                        'id' => $field['machine_name'] . '_off',
+                        'value' => 0,
+                        'label' => $this->translator->trans('Disabled', [], PS_ADMIN_PANEL_LEGACY_DOMAIN),
+                    ]
+                ];
             }
 
             if ($field['type'] === 'html') {
@@ -160,6 +179,7 @@ class HelperFormExtended
 
             if ($field['type'] === 'image') {
                 $form['form']['input'][$field['machine_name']]['type'] = 'image_lang';
+                $form['form']['input'][$field['machine_name']]['lang'] = true;
             }
         }
 
@@ -175,14 +195,15 @@ class HelperFormExtended
     {
         $fields = [];
 
-        foreach ($this->languages as $lang) {
-            $idLang = (int) $lang['id_lang'];
+        foreach ($this->fields as $key => $field) {
+            if ($field['lang'] === false) {
+                $fields[$key] = Configuration::get($key, null);
+                continue;
+            }
 
-            foreach (array_keys($this->fields) as $key) {
-                $fields[$key][$idLang] = Tools::getValue(
-                    $key . '_' . $idLang,
-                    Configuration::get($key, $idLang)
-                );
+            foreach ($this->languages as $lang) {
+                $idLang = (int) $lang['id_lang'];
+                $fields[$key][$idLang] = Configuration::get($key, $idLang);
             }
         }
 
@@ -193,28 +214,69 @@ class HelperFormExtended
      * This method is used to process the form submission.
      * It is called when the form is submitted.
      *
-     * @return bool
+     * @return array
      */
-    public function postProcess(): bool
+    public function postProcess(): array
+    {
+        $errors = [];
+
+        foreach ($this->fields as $key => $field) {
+            $saveResult = $field['lang'] === true
+                ? $this->processMultiLanguageField($key, $field)
+                : $this->processSingleLanguageField($key, $field);
+
+            $errors = array_merge($errors, $saveResult);
+        }
+
+        // Flatten the errors array.
+        return array_filter($errors, function ($error) {
+            return !empty($error);
+        });
+    }
+
+    /**
+     * Save field with language support.
+     *
+     * @param string $key
+     * @param array $field
+     *
+     * @return array
+     */
+    private function processMultiLanguageField(string $key = '', array $field = []): array
     {
         $values = [];
         $errors = [];
 
-        foreach ($this->fields as $key => $field) {
-            foreach ($this->languages as $lang) {
-                if ($field['type'] === 'image') {
-                    $uploaded = $this->imageHandler->uploadImage($_FILES, $key, (int) $lang['id_lang']);
+        foreach ($this->languages as $lang) {
+            $idLang = (int) $lang['id_lang'];
+            $localeLang = $lang['locale'];
 
-                    if (true === $uploaded['success']) {
-                        $uploaded = $uploaded['filename'];
-                        $values[$key][$lang['id_lang']] = $uploaded;
-                    } else {
-                        $errors[] = $uploaded['error'];
-                    }
-                } else {
-                    $values[$key][$lang['id_lang']] = Tools::getValue($key . '_' . $lang['id_lang']);
+            if ($field['type'] === 'image') {
+                $uploaded = $this->imageHandler->uploadImage($_FILES, $key, $idLang);
+
+                if ($uploaded['success'] === false) {
+                    $errors[] = $uploaded['error'];
+                    continue;
+                }
+
+                $value = $uploaded['filename'];
+            } else {
+                $value = Tools::getValue($key . '_' . $idLang);
+
+                if ($field['required'] === true && empty($value) === true) {
+                    $errors[] = $this->translator->trans(
+                        'The "%field%" field for language "%lang%" is required.',
+                        [
+                            '%field%' => $field['label'],
+                            '%lang%' => $localeLang
+                        ],
+                        PS_ADMIN_PANEL_LEGACY_DOMAIN
+                    );
+                    continue;
                 }
             }
+
+            $values[$key][$idLang] = $value;
 
             if (!Configuration::updateValue($key, $values[$key], true)) {
                 $errors[] = $this->translator->trans(
@@ -227,15 +289,45 @@ class HelperFormExtended
             }
         }
 
-        // If there are errors, display them.
-        if (!empty($errors)) {
-            foreach ($errors as $error) {
-                PrestaShopLogger::addLog($error, 3);
-            }
+        return $errors;
+    }
 
-            return false;
+    /**
+     * Save field without language support.
+     *
+     * @param string $key
+     * @param array $field
+     *
+     * @return array
+     */
+    private function processSingleLanguageField(string $key = '', array $field = []): array
+    {
+        $value = Tools::getValue($key);
+
+        if ($field['required'] === true && empty($value) === true) {
+            return [
+                $this->translator->trans(
+                    'The "%field%" field is required.',
+                    [
+                        '%field%' => $field['label']
+                    ],
+                    PS_ADMIN_PANEL_LEGACY_DOMAIN
+                )
+            ];
         }
 
-        return true;
+        if (!Configuration::updateValue($key, $value, true)) {
+            return [
+                $this->translator->trans(
+                    'Failed to update configuration for key "%key%".',
+                    [
+                        '%key%' => $key
+                    ],
+                    PS_ADMIN_PANEL_LEGACY_DOMAIN
+                )
+            ];
+        }
+
+        return [];
     }
 }

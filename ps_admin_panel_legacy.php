@@ -24,7 +24,7 @@ if (!defined('_PS_VERSION_')) {
     exit;
 }
 
-if (true === file_exists(__DIR__ . '/vendor/autoload.php')) {
+if (file_exists(__DIR__ . '/vendor/autoload.php') === true) {
     require_once __DIR__ . '/vendor/autoload.php';
 }
 // phpcs:enable
@@ -77,7 +77,7 @@ class Ps_Admin_Panel_Legacy extends Module implements WidgetInterface
         $this->author_uri = 'https://www.jjpeleato.com/';
         $this->need_instance = 0;
         $this->ps_versions_compliancy = [
-            'min' => '1.7.8.0',
+            'min' => '1.7.6.0',
             'max' => '8.2.1'
         ];
         $this->bootstrap = true;
@@ -197,20 +197,17 @@ class Ps_Admin_Panel_Legacy extends Module implements WidgetInterface
          */
         $output = '';
         if (Tools::isSubmit('submit_' . $this->name)) {
-            $postProcess = $this->helperFormExtended->postProcess();
+            $errors = $this->helperFormExtended->postProcess();
 
-            if ($postProcess === true) {
+            if (empty($errors) === true) {
                 $output = $this->displayConfirmation(
                     $this->trans('The settings have been updated.', [], PS_ADMIN_PANEL_LEGACY_DOMAIN)
                 );
             } else {
-                $output = $this->displayError(
-                    $this->trans(
-                        'Some settings could not be updated. Please check the logs for more details: Advanced Parameters > Logs.',
-                        [],
-                        PS_ADMIN_PANEL_LEGACY_DOMAIN
-                    )
-                );
+                // If there are errors, display them.
+                foreach ($errors as $error) {
+                    $output .= $this->displayError($error);
+                }
             }
 
             // Clear the cache after updating the configuration.
@@ -253,7 +250,7 @@ class Ps_Admin_Panel_Legacy extends Module implements WidgetInterface
     public function renderWidget($hookName, array $configuration): string
     {
         $variables = $this->getWidgetVariables($hookName, $configuration);
-        if (true === empty($variables)) {
+        if (empty($variables) === true) {
             return '';
         }
 
@@ -280,6 +277,12 @@ class Ps_Admin_Panel_Legacy extends Module implements WidgetInterface
         $idLang = $this->context->language->id;
 
         foreach ($this->fields as $key => $field) {
+            if ($field['lang'] === false) {
+                // If the field is not multilingual, get the value directly.
+                $variables[$field['machine_name']] = Configuration::get($key, null);
+                continue;
+            }
+
             $variables[$field['machine_name']] = Configuration::get($key, $idLang);
         }
 
