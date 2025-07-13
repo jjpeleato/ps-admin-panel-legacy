@@ -23,10 +23,6 @@ declare(strict_types=1);
 
 namespace PrestaShop\Module\PsAdminPanelLegacy\Native\Classes;
 
-use Context;
-use ImageManager;
-use Configuration;
-
 // phpcs:disable
 /**
  * If this file is called directly, then abort execution.
@@ -60,7 +56,6 @@ class VideoHandler extends MediaHandler
      */
     public function __construct(string $path = '')
     {
-        $this->translator = Context::getContext()->getTranslator();
         $this->path = $path;
         $this->maxFileSize = self::MAX_FILE_SIZE;
         $this->authExtensions = ['mp4', 'avi', 'mov', 'mkv', 'webm', 'flv', 'quicktime'];
@@ -74,5 +69,6 @@ class VideoHandler extends MediaHandler
             'video/x-flv',
             'video/quicktime',
         ];
+        parent::__construct();
     }
 }

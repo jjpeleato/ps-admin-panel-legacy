@@ -23,8 +23,6 @@ declare(strict_types=1);
 
 namespace PrestaShop\Module\PsAdminPanelLegacy\Native\Classes;
 
-use Context;
-
 // phpcs:disable
 /**
  * If this file is called directly, then abort execution.
@@ -58,7 +56,6 @@ class ImageHandler extends MediaHandler
      */
     public function __construct(string $path = '')
     {
-        $this->translator = Context::getContext()->getTranslator();
         $this->path = $path;
         $this->maxFileSize = self::MAX_FILE_SIZE;
         $this->authExtensions = ['gif', 'jpg', 'jpeg', 'jpe', 'png', 'svg'];
@@ -72,5 +69,6 @@ class ImageHandler extends MediaHandler
             'image/svg',
             'image/svg+xml'
         ];
+        parent::__construct();
     }
 }

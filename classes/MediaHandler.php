@@ -24,6 +24,7 @@ declare(strict_types=1);
 namespace PrestaShop\Module\PsAdminPanelLegacy\Native\Classes;
 
 use Configuration;
+use Context;
 use ImageManager;
 use Shop;
 
@@ -52,6 +53,16 @@ abstract class MediaHandler
 
     /** @var array $authMimeType. */
     protected array $authMimeType = [];
+
+    /**
+     * Constructor for the MediaHandler class.
+     *
+     * This constructor initializes the translator.
+     */
+    public function __construct()
+    {
+        $this->translator = Context::getContext()->getTranslator();
+    }
 
     /**
      * Uploads media to the configured directory.
