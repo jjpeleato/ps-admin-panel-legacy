@@ -24,6 +24,8 @@ declare(strict_types=1);
 namespace PrestaShop\Module\PsAdminPanelLegacy\Native\Classes;
 
 use Context;
+use ImageManager;
+use Configuration;
 
 // phpcs:disable
 /**
@@ -35,42 +37,42 @@ if (!defined('_PS_VERSION_')) {
 // phpcs:enable
 
 /**
- * ImageHandler class for managing image uploads.
+ * VideoHandler class for managing video uploads.
  *
- * This class provides functionality to handle image uploads, including
+ * This class provides functionality to handle video uploads, including
  * creating the upload directory if it does not exist.
  */
-class ImageHandler extends MediaHandler
+class VideoHandler extends MediaHandler
 {
     /**
-     * Maximum file size for image uploads.
-     * This is set to 4 MB (4.000.000 bytes).
+     * Maximum file size for video uploads.
+     * This is set to 10 MB (10.000.000 bytes).
      */
-    private const MAX_FILE_SIZE = 4000000; // 4 MB
+    private const MAX_FILE_SIZE = 10000000; // 10 MB
 
     /**
-     * Constructor for the ImageHandler class.
+     * Constructor for the VideoHandler class.
      *
-     * This constructor initializes the allowed image extensions.
+     * This constructor initializes the allowed video extensions.
      * It is called when an instance of the class is created.
      *
-     * @param string $path The path where images will be uploaded.
+     * @param string $path The path where videos will be uploaded.
      */
     public function __construct(string $path = '')
     {
         $this->translator = Context::getContext()->getTranslator();
         $this->path = $path;
         $this->maxFileSize = self::MAX_FILE_SIZE;
-        $this->authExtensions = ['gif', 'jpg', 'jpeg', 'jpe', 'png', 'svg'];
+        $this->authExtensions = ['mp4', 'avi', 'mov', 'mkv', 'webm', 'flv', 'quicktime'];
         $this->authMimeType = [
-            'image/gif',
-            'image/jpg',
-            'image/jpeg',
-            'image/pjpeg',
-            'image/png',
-            'image/x-png',
-            'image/svg',
-            'image/svg+xml'
+            'video/mp4',
+            'video/avi',
+            'video/mov',
+            'video/x-matroska',
+            'video/webm',
+            'video/x-msvideo',
+            'video/x-flv',
+            'video/quicktime',
         ];
     }
 }

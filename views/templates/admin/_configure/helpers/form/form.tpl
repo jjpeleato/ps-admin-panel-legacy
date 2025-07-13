@@ -19,7 +19,7 @@
 {extends file="helpers/form/form.tpl"}
 
 {block name="field"}
-  {if $input.type == 'image_lang'}
+  {if $input.type === 'image_lang' || $input.type === 'video_lang'}
     <div class="col-lg-8">
       <div class="form-group">
         {foreach from=$languages item=language}
@@ -52,11 +52,18 @@
               </div>
             {/if}
             {if isset($fields_value[$input.name][$language.id_lang]) && $fields_value[$input.name][$language.id_lang] != ''}
-              <div class="col-lg-12 js-thumbnail" data-name="{$input.name}" data-lang="{$language.id_lang}" style="margin-top: 10px;">
-                <img src="{$uri}upload/{$fields_value[$input.name][$language.id_lang]}" class="img-thumbnail" width="200" />
+              <div class="col-lg-12 js-media" data-name="{$input.name}" data-lang="{$language.id_lang}" style="margin-top: 10px;">
+                {if $input.type === 'video_lang'}
+                  <video controls class="embed-responsive" width="200">
+                    <source src="{$uri}upload/{$fields_value[$input.name][$language.id_lang]}">
+                    {l s='Your browser does not support the video tag.' d='Admin.Actions'}
+                  </video>
+                {else}
+                  <img src="{$uri}upload/{$fields_value[$input.name][$language.id_lang]}" class="img-thumbnail" width="200" />
+                {/if}
               </div>
-              <div class="col-lg-12 js-thumbnail-actions" data-name="{$input.name}" data-lang="{$language.id_lang}" style="margin-top: 5px;">
-                <button class="btn btn-danger js-thumbnail-delete" name="submitDeleteAttachments" data-name="{$input.name}" data-lang="{$language.id_lang}" type="button">
+              <div class="col-lg-12 js-media-actions" data-name="{$input.name}" data-lang="{$language.id_lang}" style="margin-top: 5px;">
+                <button class="btn btn-danger js-media-delete" name="submitDeleteAttachments" data-name="{$input.name}" data-lang="{$language.id_lang}" type="button">
                   <i class="icon-trash"></i> {l s='Delete a file' d='Admin.Actions'}
                 </button>
               </div>

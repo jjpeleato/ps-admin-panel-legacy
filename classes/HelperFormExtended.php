@@ -58,6 +58,9 @@ class HelperFormExtended
     /** @var ImageHandler $imageHandler */
     private ImageHandler $imageHandler;
 
+    /** @var VideoHandler $videoHandler */
+    private VideoHandler $videoHandler;
+
     /**
      * HelperFormExtended constructor.
      * This constructor is used to initialize the HelperFormExtended class.
@@ -71,6 +74,9 @@ class HelperFormExtended
 
         // Initialize the image handler.
         $this->imageHandler = new ImageHandler(PS_ADMIN_PANEL_LEGACY_UPLOAD_DIR);
+
+        // Initialize the video handler.
+        $this->videoHandler = new VideoHandler(PS_ADMIN_PANEL_LEGACY_UPLOAD_DIR);
     }
 
     /**
@@ -181,6 +187,11 @@ class HelperFormExtended
                 $form['form']['input'][$field['machine_name']]['type'] = 'image_lang';
                 $form['form']['input'][$field['machine_name']]['lang'] = true;
             }
+
+            if ($field['type'] === 'video') {
+                $form['form']['input'][$field['machine_name']]['type'] = 'video_lang';
+                $form['form']['input'][$field['machine_name']]['lang'] = true;
+            }
         }
 
         return $form;
@@ -251,8 +262,10 @@ class HelperFormExtended
             $idLang = (int) $lang['id_lang'];
             $localeLang = $lang['locale'];
 
-            if ($field['type'] === 'image') {
-                $uploaded = $this->imageHandler->uploadImage($_FILES, $key, $idLang);
+            if ($field['type'] === 'image' || $field['type'] === 'video') {
+                $uploaded = $field['type'] === 'video'
+                    ? $this->videoHandler->uploadMedia($_FILES, $key, $idLang)
+                    : $this->imageHandler->uploadMedia($_FILES, $key, $idLang);
 
                 if ($uploaded['success'] === false) {
                     $errors[] = $uploaded['error'];

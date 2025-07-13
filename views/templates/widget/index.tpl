@@ -38,6 +38,14 @@
             <img src="{$path}/upload/{$image}" alt="{$image_alt}" title="{$image_alt}" />
           </div>
         {/if}
+        {if empty($video) === false}
+          <div class="video">
+            <video controls class="embed-responsive" width="200">
+              <source src="{$path}/upload/{$video}">
+              {l s='Your browser does not support the video tag.' d='Admin.Actions'}
+            </video>
+          </div>
+        {/if}
       </div>
     </div>
   </div>
