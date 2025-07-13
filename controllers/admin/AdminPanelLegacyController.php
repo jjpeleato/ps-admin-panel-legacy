@@ -73,8 +73,7 @@ class AdminPanelLegacyController extends ModuleAdminController
             ]);
         }
 
-        $mediaDir = _PS_MODULE_DIR_ . 'ps_admin_panel_legacy' . DIRECTORY_SEPARATOR . 'upload' . DIRECTORY_SEPARATOR;
-        $mediaPath = $mediaDir . $filename;
+        $mediaPath = PS_ADMIN_PANEL_LEGACY_UPLOAD_DIR . $filename;
 
         if (!file_exists($mediaPath)) {
             return $this->ajaxRenderJson([
