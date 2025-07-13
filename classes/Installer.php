@@ -78,12 +78,45 @@ class Installer
             $idShopGroup = (int) $shop['id_shop_group'];
             $idShop = (int) $shop['id_shop'];
 
+            if (!$this->installShopFixture($idShopGroup, $idShop)) {
+                return false;
+            }
+
             foreach ($this->languages as $lang) {
                 $idLang = (int) $lang['id_lang'];
 
                 if (!$this->installLanguageFixture($idLang, $idShopGroup, $idShop)) {
                     return false;
                 }
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     * This method is used to install the fixture for a specific shop group and shop.
+     * It updates the configuration values for the given shop group and shop.
+     *
+     * @param int $idShopGroup
+     * @param int $idShop
+     *
+     * @return bool
+     */
+    public function installShopFixture(int $idShopGroup = 0, int $idShop = 0): bool
+    {
+        foreach ($this->fields as $key => $field) {
+            if ($field['lang'] === true) {
+                continue;
+            }
+
+            if (!Configuration::updateValue($key, $field['value'], false, $idShopGroup, $idShop)) {
+                PrestaShopLogger::addLog(
+                    "Failed to update configuration key: $key for shop $idShop and shop group $idShopGroup",
+                    3
+                );
+
+                return false;
             }
         }
 
@@ -103,6 +136,10 @@ class Installer
     public function installLanguageFixture(int $idLang = 0, int $idShopGroup = 0, int $idShop = 0): bool
     {
         foreach ($this->fields as $key => $field) {
+            if ($field['lang'] === false) {
+                continue;
+            }
+
             if (!Configuration::updateValue($key, [$idLang => $field['value']], false, $idShopGroup, $idShop)) {
                 PrestaShopLogger::addLog(
                     "Failed to update configuration key: $key for shop $idShop and language $idLang",

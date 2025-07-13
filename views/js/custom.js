@@ -41,7 +41,6 @@
         url: window.psapl_controller_delete_url,
         type: "POST",
         dataType: "JSON",
-        async: false,
         data: {
           ajax: true,
           controller: window.psapl_controller_delete,
@@ -55,13 +54,14 @@
           if (result.success) {
             domThumbnail.remove();
             domActions.remove();
-            alert(result.message || "Image deleted successfully.");
+            window.showSuccessMessage(result.message || "Image deleted successfully.");
           } else {
-            alert(result.message || "Error deleting image.");
+            window.showErrorMessage(result.message || "Error deleting image.");
           }
         },
         error: function (xhr, status, error) {
-          console.error("Error deleting image");
+          window.showErrorMessage("Error deleting image. Please try again.");
+          console.error("Error deleting image:", error);
         },
       });
     });
