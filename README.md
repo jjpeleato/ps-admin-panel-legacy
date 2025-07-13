@@ -1,92 +1,158 @@
 # PrestaShop: Admin Panel (Legacy)
 
-This PrestaShop module adds an admin panel to the back office, allowing easy configuration of various types of fields. It is designed to work with PrestaShop versions 1.7.8.0 to 8.2.1 and provides a user-friendly interface for managing module settings.
+This module facilitates the creation and management of custom administration panels within PrestaShop’s back office. It automatically generates configuration forms based on the `settings.php` file, incorporating various types of fields such as text, HTML, switches, images, and videos.
 
-## Multi-store and multi-language compatibility
+### The problem
 
-This module supports PrestaShop's multi-store and multi-language feature. If multistore is enabled, ensure that you select the appropriate store context before configuring the module.
+This module has been developed with the aim of simplifying and streamlining the creation of custom admin panels in PrestaShop. Typically, these tasks involve repetitive work that consumes time and resources without adding significant value to the project. Thanks to this module, much of that process is automated, allowing developers to focus on more important aspects of development.
 
-## Requirements
+In addition, it is specifically designed to support frontend teams, enabling them to build functional admin interfaces without directly relying on the backend team. This results in greater autonomy, reduced development time, and overall improved workflow efficiency.
 
-- **PrestaShop version**: 1.7.8.0 to 8.2.1
+### Main features
+
+- **Automatic panel generation**: Dynamically creates admin interfaces based on the configuration in `settings.php`.
+- **Multiple field types**: Supports text fields, HTML with WYSIWYG editor, switches, images and videos.
+- **Tabbed organization**: Fields can be organized into different tabs.
+- **Media management**: Includes upload, validation and deletion of media files (images and videos).
+- **Built-in validation**: Automatically validates uploaded files and required fields.
+- **Multi-language support**: Fully supports PrestaShop’s multi-language features, allowing language-specific configurations.
+- **Multi-store compatibility**: This module supports PrestaShop's multi-store feature. If multistore is enabled, ensure that you select the appropriate store context before configuring the module.
+
+### Requirements
+
+- **PrestaShop version**: 1.7.6.0 to 8.2.1
 - **PHP version**: Compatible with the PHP version required by your PrestaShop installation.
 
-## Installation
+**Note:** The module is very likely to be compatible with versions beyond PrestaShop v9.0.0. You can use it without any issues, and if you encounter any incompatibility with a specific version, feel free to let me know.
 
-1. Clone or download this repository into the `modules` directory of your PrestaShop installation.
-2. Navigate to the PrestaShop back office.
-3. Go to **Modules > Module Manager**.
-4. Search for `PrestaShop Admin Panel` and click **Install**.
+### Requirements to develop
 
-### Installation to develop
-
-- You have to install **Lando**: https://docs.devwithlando.io/
-
-If Lando's tools does not work for you, there is another way. You must install the environment manually: XAMP, Composer, Node.JS and NPM or Yarn.
+To run this project, you must have Composer and Node.js installed, as well as a package manager such as NPM or Yarn.
 
 For more information visit:
 
-- XAMP: https://www.apachefriends.org/es/index.html
 - Composer: https://getcomposer.org/
 - Node and NPM: https://nodejs.org/es/
 - Yarn: https://yarnpkg.com/es-ES/
 
-**Note:** If you work with Windows < 10. To execute the commands, we recommend installing **Cygwin** http://www.cygwin.com/
+## Installation to develop
 
-**Note:** If you work with Windows 10. To execute the commands, we recommend installing **WSL 2** with Ubuntu https://docs.microsoft.com/es-es/windows/wsl/install-win10
+1. Clone or download this repository into the `modules` directory of your PrestaShop installation.
+2. Navigate to the module directory:
+   ```bash
+   cd modules/ps_admin_panel_legacy
+   ```
+3. Install the dependencies using Composer:
+   ```bash
+   composer install
+   ```
+4. Install the Node.js dependencies:
+   ```bash
+   npm install --save-dev
+   ```
+5. Search and replace all occurrences with your new module name throughout the project files. Remember to activate the search: "Match uppercase and lowercase".
+  - Rename the module directory from `ps_admin_panel_legacy` to `your_new_module_name`.
+  - Rename the main module file from `ps_admin_panel_legacy.php` to `your_new_module_name.php`. Remember that both must match to work correctly.
+  - Rename `Ps_Admin_Panel_Legacy` to `Your_New_Module_Name`.
+  - Rename `ps_admin_panel_legacy` to `your_new_module_name`.
+  - Rename `PS_ADMIN_PANEL_LEGACY_` to `YOUR_NEW_MODULE_NAME_`.
+  - Rename the `AdminPanelLegacyController` file to `AdminYourNewModuleNameController`. Remember that it is mandatory to use the prefix `Admin` and the suffix `Controller`.
+  - Update the `PS_ADMIN_PANEL_LEGACY_NAME` constant in `settings.php` to use the exact same name `AdminYourNewModuleName`. Both must match for the panel to work correctly.
+  - Change the value of `PS_ADMIN_PANEL_LEGACY_DOMAIN` in `settings.php` to your new domain name: `Modules.Yournewmodulename.Admin`.
+6. Install the module in PrestaShop's back office.
+7. Clear the PrestaShop cache to ensure the module is recognized.
+8. End and happy coding!
 
-**Note:** If you work with Windows 10. You need install the following package: https://www.npmjs.com/package/win-node-env
+### Configure file `settings.php`
 
-**Note:** I recommend installing the following IDE for PHP Programming: Visual Studio Code (https://code.visualstudio.com/) or PHPStorm (https://www.jetbrains.com/phpstorm/).
+The `settings.php` file is the core of the module's configuration. It is used to define the structure and content of the admin panel, and should be placed in the root directory of the module.
+
+Currently, the module supports five field types: `switch`, `text`, `html`, `video` and `image`. To add, modify, or remove fields in the admin panel, you need to use the constant `PS_ADMIN_PANEL_LEGACY_FIELDS`.
+
+As a reference, you can check the `settings.php` file, which includes a complete example with all available configuration options for the fields.
 
 ### Project structure
 
 ```
 ps_admin_panel_legacy/
-├── .husky
-├── views/
+├── .husky/ # Husky hooks for Git
+│   ├── commit-msg
+│   ├── post-merge
+│   ├── post-rewrite
+│   └── pre-commit
+├── classes/
+│   ├── HelperFormExtended.php # Extended helper form class for custom fields
+│   ├── ImageHandler.php # Class for handling image uploads
 │   ├── index.php
+│   ├── Installer.php # Installer class for setting up the module
+│   ├── MediaHandler.php # Class for managing media files (images and videos)
+│   ├── TabInstaller.php # Class for installing tabs in the admin panel
+│   ├── Uninstaller.php # Uninstaller class for cleaning up the module
+│   └── VideoHandler.php # Class for handling video uploads
+├── controllers/
+│   ├── admin/
+│   │   ├── AdminPanelLegacyController.php # Handles the AJAX request to delete media files
+│   │   └── index.php
+│   └── index.php
+├── upload/ # Directory for uploaded media files
+│   └── index.php
+├── views/ 
+│   ├── js/
+│   │   ├── custom.js
+│   │   └── index.php
 │   ├── templates/
-│       ├── admin/
-│       │   ├── index.tpl
-│       └── widget/
-│           └── index.tpl
+│   │   ├── admin/
+│   │   │   ├── _configure/
+│   │   │   │   ├── helpers/
+│   │   │   │   │   ├── form/
+│   │   │   │   │   │   ├── form.tpl
+│   │   │   │   │   │   └── index.php
+│   │   │   │   │   └── index.php
+│   │   │   │   └── index.php
+│   │   │   ├── index.php
+│   │   │   └── index.tpl
+│   │   ├── widget/
+│   │   │   ├── index.php
+│   │   │   └── index.tpl
+│   │   └── index.php
+│   └── index.php
 ├── .editorconfig
 ├── .gitignore
 ├── .prettierignore
 ├── commitlint.config.cjs
 ├── composer.json
+├── config.xml
 ├── index.php
 ├── LICENSE
 ├── logo.png
 ├── package.json
 ├── phpcs.xml
-├── ps_admin_panel_legacy.php
-└── README.md
+├── ps_admin_panel_legacy.php # Main module file
+├── README.md
+└── settings.php # Configuration file for the module
 ```
 
-### Technologies and tools
+## Technologies and tools
 
 This project utilizes various technologies and tools for automation and the development process. For more details and learning resources, please refer to the following links.
 
-1. PHP: https://www.php.net/
-2. MariaDB: https://mariadb.org/
-3. MySQL: https://www.mysql.com/
+1. Git: https://git-scm.com/
+2. PHP: https://www.php.net/
+3. MariaDB: https://mariadb.org/
 4. Apache: https://www.apache.org/
-5. PrestaShop: https://prestashop.com/
+5. Docker: https://www.docker.com/
 6. Lando: https://docs.devwithlando.io/
-7. Docker: https://www.docker.com/
-8. Git: https://git-scm.com/
-9. Composer: https://getcomposer.org/
-10. PHP_CodeSniffer: https://github.com/squizlabs/PHP_CodeSniffer
-11. Node.js: https://nodejs.org/
-12. NPM: https://www.npmjs.com/
-13. Yarn: https://yarnpkg.com/
-14. Gulp: https://gulpjs.com/
-15. EditorConfig: https://editorconfig.org/
-16. Husky: https://www.npmjs.com/package/husky
-17. Commitlint: https://commitlint.js.org/
-18. Commitizen: http://commitizen.github.io/cz-cli/
+7. PrestaShop: https://prestashop.com/
+8. Composer: https://getcomposer.org/
+9. PHP_CodeSniffer: https://github.com/squizlabs/PHP_CodeSniffer
+10. Node.js: https://nodejs.org/
+11. NPM: https://www.npmjs.com/
+12. Yarn: https://yarnpkg.com/
+13. Gulp: https://gulpjs.com/
+14. EditorConfig: https://editorconfig.org/
+15. Husky: https://www.npmjs.com/package/husky
+16. Commitlint: https://commitlint.js.org/
+17. Commitizen: http://commitizen.github.io/cz-cli/
 
 **Note:** Many thanks to all the developers who worked on these projects.
 
