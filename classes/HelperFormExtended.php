@@ -36,7 +36,6 @@ use AdminController;
 use Configuration;
 use Context;
 use HelperForm;
-use PrestaShopLogger;
 use Tools;
 
 /**
@@ -215,35 +214,24 @@ class HelperFormExtended
      * This method is used to process the form submission.
      * It is called when the form is submitted.
      *
-     * @return bool
+     * @return array
      */
-    public function postProcess(): bool
+    public function postProcess(): array
     {
         $errors = [];
 
         foreach ($this->fields as $key => $field) {
             $saveResult = $field['lang'] === true
-                ? $this->saveFieldWithLanguage($key, $field)
-                : $this->saveFieldWithoutLanguage($key, $field);
+                ? $this->processMultiLanguageField($key, $field)
+                : $this->processSingleLanguageField($key, $field);
 
             $errors = array_merge($errors, $saveResult);
         }
 
         // Flatten the errors array.
-        $errors = array_filter($errors, function ($error) {
+        return array_filter($errors, function ($error) {
             return !empty($error);
         });
-
-        // If there are errors, display them.
-        if (!empty($errors)) {
-            foreach ($errors as $error) {
-                PrestaShopLogger::addLog($error, 3);
-            }
-
-            return false;
-        }
-
-        return true;
     }
 
     /**
@@ -254,14 +242,17 @@ class HelperFormExtended
      *
      * @return array
      */
-    private function saveFieldWithLanguage(string $key = '', array $field = []): array
+    private function processMultiLanguageField(string $key = '', array $field = []): array
     {
         $values = [];
         $errors = [];
 
         foreach ($this->languages as $lang) {
+            $idLang = (int) $lang['id_lang'];
+            $localeLang = $lang['locale'];
+
             if ($field['type'] === 'image') {
-                $uploaded = $this->imageHandler->uploadImage($_FILES, $key, (int) $lang['id_lang']);
+                $uploaded = $this->imageHandler->uploadImage($_FILES, $key, $idLang);
 
                 if ($uploaded['success'] === false) {
                     $errors[] = $uploaded['error'];
@@ -270,13 +261,14 @@ class HelperFormExtended
 
                 $value = $uploaded['filename'];
             } else {
-                $value = Tools::getValue($key . '_' . $lang['id_lang']);
+                $value = Tools::getValue($key . '_' . $idLang);
 
                 if ($field['required'] === true && empty($value) === true) {
                     $errors[] = $this->translator->trans(
-                        'The field "%field%" is required.',
+                        'The "%field%" field for language "%lang%" is required.',
                         [
-                            '%field%' => $field['label']
+                            '%field%' => $field['label'],
+                            '%lang%' => $localeLang
                         ],
                         PS_ADMIN_PANEL_LEGACY_DOMAIN
                     );
@@ -284,7 +276,7 @@ class HelperFormExtended
                 }
             }
 
-            $values[$key][$lang['id_lang']] = $value;
+            $values[$key][$idLang] = $value;
 
             if (!Configuration::updateValue($key, $values[$key], true)) {
                 $errors[] = $this->translator->trans(
@@ -308,14 +300,14 @@ class HelperFormExtended
      *
      * @return array
      */
-    private function saveFieldWithoutLanguage(string $key = '', array $field = []): array
+    private function processSingleLanguageField(string $key = '', array $field = []): array
     {
         $value = Tools::getValue($key);
 
         if ($field['required'] === true && empty($value) === true) {
             return [
                 $this->translator->trans(
-                    'The field "%field%" is required.',
+                    'The "%field%" field is required.',
                     [
                         '%field%' => $field['label']
                     ],
