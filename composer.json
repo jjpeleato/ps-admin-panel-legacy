@@ -29,7 +29,8 @@
 	},
   "autoload": {
 		"psr-4": {
-			"PrestaShop\\Module\\PsAdminPanelLegacy\\Native\\Classes\\": "classes/"
+      "PrestaShop\\Module\\PsAdminPanelLegacy\\Helper\\Includes\\": "includes/",
+      "PrestaShop\\Module\\PsAdminPanelLegacy\\Native\\Classes\\": "classes/"
 		},
 		"files": [
 			"settings.php"

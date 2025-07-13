@@ -58,7 +58,7 @@ class Uninstaller
      *
      * @param array $fields An associative array where keys are configuration field names to be deleted.
      */
-    public function __construct($fields = [])
+    public function __construct(array $fields = [])
     {
         $this->fields = $fields;
 

@@ -29,6 +29,7 @@ if (file_exists(__DIR__ . '/vendor/autoload.php') === true) {
 }
 // phpcs:enable
 
+use PrestaShop\Module\PsAdminPanelLegacy\Helper\Includes\SettingsValidator;
 use PrestaShop\Module\PsAdminPanelLegacy\Native\Classes\HelperFormExtended;
 use PrestaShop\Module\PsAdminPanelLegacy\Native\Classes\Installer;
 use PrestaShop\Module\PsAdminPanelLegacy\Native\Classes\TabInstaller;
@@ -61,6 +62,9 @@ class Ps_Admin_Panel_Legacy extends Module implements WidgetInterface
 
     /** @var Uninstaller $uninstaller */
     private Uninstaller $uninstaller;
+
+    /** @var SettingsValidator $settingsValidator */
+    private SettingsValidator $settingsValidator;
 
     /** @var HelperFormExtended $helperFormExtended */
     private HelperFormExtended $helperFormExtended;
@@ -102,6 +106,9 @@ class Ps_Admin_Panel_Legacy extends Module implements WidgetInterface
 
         // Initialize the uninstaller.
         $this->uninstaller = new Uninstaller($this->fields);
+
+        // Initialize the settings validator.
+        $this->settingsValidator = new SettingsValidator($this->fields);
 
         // Initialize the helper form extended.
         $this->helperFormExtended = new HelperFormExtended($this->languages, $this->fields);
@@ -188,6 +195,11 @@ class Ps_Admin_Panel_Legacy extends Module implements WidgetInterface
                     $this->trans('You must select a store.', [], PS_ADMIN_PANEL_LEGACY_DOMAIN)
                 );
             }
+        }
+
+        $validation = $this->settingsValidator->validate();
+        if (empty($validation) === false) {
+            return $this->displayError($validation);
         }
 
         $this->addJsDefList();
