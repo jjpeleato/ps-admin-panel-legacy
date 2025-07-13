@@ -35,12 +35,12 @@
         {/if}
         {if empty($image) === false}
           <div class="image">
-            <img src="{$path}/upload/{$image}" alt="{$image_alt}" title="{$image_alt}" />
+            <img src="{$path}/upload/{$image}" alt="{$image_alt}" title="{$image_alt}" width="400" />
           </div>
         {/if}
         {if empty($video) === false}
           <div class="video">
-            <video controls class="embed-responsive" width="200">
+            <video controls width="400">
               <source src="{$path}/upload/{$video}">
               {l s='Your browser does not support the video tag.' d='Admin.Actions'}
             </video>
