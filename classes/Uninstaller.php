@@ -48,6 +48,9 @@ class Uninstaller
     /** @var ImageHandler $imageHandler */
     private ImageHandler $imageHandler;
 
+    /** @var VideoHandler $videoHandler */
+    private VideoHandler $videoHandler;
+
     /**
      * Uninstaller constructor.
      *
@@ -61,6 +64,9 @@ class Uninstaller
 
         // Initialize the image handler.
         $this->imageHandler = new ImageHandler(PS_ADMIN_PANEL_LEGACY_UPLOAD_DIR);
+
+        // Initialize the video handler.
+        $this->videoHandler = new VideoHandler(PS_ADMIN_PANEL_LEGACY_UPLOAD_DIR);
     }
 
     /**
@@ -70,8 +76,9 @@ class Uninstaller
      */
     public function uninstall(): bool
     {
-        // Delete all images in the images folder.
-        $this->imageHandler->deleteImages();
+        // Delete all images and videos in the upload folder.
+        $this->imageHandler->deleteAllMedia();
+        $this->videoHandler->deleteAllMedia();
 
         return $this->uninstallFixtures();
     }

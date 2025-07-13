@@ -27,14 +27,14 @@
       dom.val(file[file.length - 1]);
     });
 
-    $(".js-thumbnail-delete").click(function (e) {
+    $(".js-media-delete").click(function (e) {
       const name = $(this).data("name");
       const language = $(this).data("lang");
       const domThumbnail = $(
-        `.js-thumbnail[data-name="${name}"][data-lang="${language}"]`
+        `.js-media[data-name="${name}"][data-lang="${language}"]`
       );
       const domActions = $(
-        `.js-thumbnail-actions[data-name="${name}"][data-lang="${language}"]`
+        `.js-media-actions[data-name="${name}"][data-lang="${language}"]`
       );
 
       $.ajax({

@@ -72,6 +72,16 @@ const PS_ADMIN_PANEL_LEGACY_FIELDS = [
         'desc' => 'Write a description for the section.',
         'value' => '',
     ],
+    'PS_ADMIN_PANEL_LEGACY_VIDEO' => [
+        'machine_name' => 'video',
+        'tab' => 'media',
+        'type' => 'video',
+        'lang' => true,
+        'required' => false,
+        'label' => 'Video',
+        'desc' => 'Upload a video for the section.',
+        'value' => '',
+    ],
     'PS_ADMIN_PANEL_LEGACY_IMAGE' => [
         'machine_name' => 'image',
         'tab' => 'media',
