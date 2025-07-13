@@ -51,7 +51,7 @@ class TabInstaller
      *
      * @param string $name The name of the tab to be installed.
      */
-    public function __construct($name = '')
+    public function __construct(string $name = '')
     {
         $this->name = $name;
     }

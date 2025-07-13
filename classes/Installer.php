@@ -59,7 +59,7 @@ class Installer
      * @param array $languages
      * @param array $fields
      */
-    public function __construct($shops = [], $languages = [], $fields = [])
+    public function __construct(array $shops = [], array $languages = [], array $fields = [])
     {
         $this->shops = $shops;
         $this->languages = $languages;

@@ -154,7 +154,7 @@ abstract class MediaHandler
      *
      * @return bool True if the file was deleted, false otherwise.
      */
-    protected function deleteMedia(string $key, int $lang, string $filename): bool
+    protected function deleteMedia(string $key = '', int $lang = 0, string $filename = ''): bool
     {
         if (Configuration::hasContext($key, $lang, Shop::getContext()) && Configuration::get($key, $lang) != $filename) {
             $media = Configuration::get($key, $lang);
@@ -188,7 +188,7 @@ abstract class MediaHandler
      *
      * @return string
      */
-    protected function sanitizeFileName(string $filename): string
+    protected function sanitizeFileName(string $filename = ''): string
     {
         $filename = basename($filename);
         $filename = preg_replace('/[^a-zA-Z0-9_\.-]/', '_', $filename);
