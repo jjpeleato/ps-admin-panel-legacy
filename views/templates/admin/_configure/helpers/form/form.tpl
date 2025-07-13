@@ -54,7 +54,7 @@
             {if isset($fields_value[$input.name][$language.id_lang]) && $fields_value[$input.name][$language.id_lang] != ''}
               <div class="col-lg-12 js-media" data-name="{$input.name}" data-lang="{$language.id_lang}" style="margin-top: 10px;">
                 {if $input.type === 'video_lang'}
-                  <video controls class="embed-responsive" width="200">
+                  <video controls class="embed-responsive" width="400">
                     <source src="{$uri}upload/{$fields_value[$input.name][$language.id_lang]}">
                     {l s='Your browser does not support the video tag.' d='Admin.Actions'}
                   </video>

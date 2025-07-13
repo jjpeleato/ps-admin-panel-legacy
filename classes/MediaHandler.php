@@ -175,7 +175,7 @@ abstract class MediaHandler
             return;
         }
 
-        $medias = glob($this->path . '*.{' . implode(', ', $this->authExtensions) . '}', GLOB_BRACE);
+        $medias = glob($this->path . '*.{' . implode(',', $this->authExtensions) . '}', GLOB_BRACE);
         if ($medias) {
             array_map('unlink', $medias);
         }
