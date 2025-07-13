@@ -23,6 +23,8 @@ In addition, it is specifically designed to support frontend teams, enabling the
 - **PrestaShop version**: 1.7.6.0 to 8.2.1
 - **PHP version**: Compatible with the PHP version required by your PrestaShop installation.
 
+**Note:** The module is very likely to be compatible with versions beyond PrestaShop v9.0.0. You can use it without any issues, and if you encounter any incompatibility with a specific version, feel free to let me know.
+
 ### Requirements to develop
 
 To run this project, you must have Composer and Node.js installed, as well as a package manager such as NPM or Yarn.
@@ -64,6 +66,10 @@ For more information visit:
 ### Configure file `settings.php`
 
 The `settings.php` file is the core of the module's configuration. It is used to define the structure and content of the admin panel, and should be placed in the root directory of the module.
+
+Currently, the module supports five field types: `switch`, `text`, `html`, `video` and `image`. To add, modify, or remove fields in the admin panel, you need to use the constant `PS_ADMIN_PANEL_LEGACY_FIELDS`.
+
+As a reference, you can check the `settings.php` file, which includes a complete example with all available configuration options for the fields.
 
 ### Project structure
 
