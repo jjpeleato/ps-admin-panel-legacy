@@ -84,7 +84,7 @@ To use the module, follow these steps:
 
 1. Install the module in the PrestaShop back office.
    - Go to the "Modules" section and click on "Module Manager".
-   - Search for `PrestaShop Admin Panel` and install it.
+   - Search for `PrestaShop: Dynamic Admin Panel` and install it.
    - If you have renamed the module, ensure that you search for the new name.
 2. Navigate to the module configuration page.
 3. Add content in the back office using the provided fields and save the changes.

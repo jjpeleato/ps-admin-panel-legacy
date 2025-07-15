@@ -19,8 +19,7 @@
 <div class="container">
   <div class="row">
     <div class="col-12 text-center">
-      <p>{l s='Developed by' d='Modules.Psdynamicadminpanel.Admin'} <a href="https://www.jjpeleato.com/"
-          title="by @jjpeleato" target="_blank">@jjpeleato</a></p>
+      <p>{l s='Developed by' d='Modules.Psdynamicadminpanel.Admin'} <a href="https://www.jjpeleato.com/" title="by @jjpeleato" target="_blank">@jjpeleato</a></p>
     </div>
   </div>
 </div>
