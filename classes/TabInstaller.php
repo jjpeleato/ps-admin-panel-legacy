@@ -21,7 +21,7 @@
 
 declare(strict_types=1);
 
-namespace PrestaShop\Module\PsAdminPanelLegacy\Native\Classes;
+namespace PrestaShop\Module\PsDynamicAdminPanel\Native\Classes;
 
 // phpcs:disable
 /**
@@ -39,7 +39,6 @@ use Tab;
  * Class TabInstaller
  *
  * This class is responsible for installing and uninstalling a tab in the back office.
- * It provides methods to add and remove a tab with the class name 'AdminPanelLegacy'.
  */
 class TabInstaller
 {
@@ -66,7 +65,7 @@ class TabInstaller
     {
         $tab = new Tab();
         $tab->active = true;
-        $tab->class_name = PS_ADMIN_PANEL_LEGACY_NAME;
+        $tab->class_name = PS_DYNAMIC_ADMIN_PANEL_NAME;
         $tab->id_parent = -1;
         $tab->module = $this->name;
 
@@ -86,7 +85,7 @@ class TabInstaller
     public function uninstallTab(): bool
     {
         // PrestaShopBundle\Entity\Repository\TabRepository::findOneIdByClassName($className) is not a static method.
-        $id_tab = Tab::getIdFromClassName(PS_ADMIN_PANEL_LEGACY_NAME);
+        $id_tab = Tab::getIdFromClassName(PS_DYNAMIC_ADMIN_PANEL_NAME);
         $tab = new Tab($id_tab);
 
         return $tab->delete();

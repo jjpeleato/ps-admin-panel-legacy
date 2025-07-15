@@ -21,7 +21,7 @@
 
 declare(strict_types=1);
 
-namespace PrestaShop\Module\PsAdminPanelLegacy\Helper\Includes;
+namespace PrestaShop\Module\PsDynamicAdminPanel\Helper\Includes;
 
 // phpcs:disable
 /**
@@ -38,9 +38,6 @@ use Context;
  * Class SettingsValidator
  *
  * Validates the structure of the settings file.
- *
- * @since 0.1.0
- * @author @jjpeleato
  */
 class SettingsValidator
 {
@@ -96,7 +93,7 @@ class SettingsValidator
                     [
                         '%key%' => $key
                     ],
-                    PS_ADMIN_PANEL_LEGACY_DOMAIN
+                    'Modules.Psdynamicadminpanel.Admin'
                 );
             }
         }
@@ -112,7 +109,7 @@ class SettingsValidator
                             '%key%' => $requiredKey,
                             '%field%' => $key
                         ],
-                        PS_ADMIN_PANEL_LEGACY_DOMAIN
+                        'Modules.Psdynamicadminpanel.Admin'
                     );
                 }
             }
@@ -129,7 +126,7 @@ class SettingsValidator
                         '%field%' => $key,
                         '%validTypes%' => implode(', ', $validTypes)
                     ],
-                    PS_ADMIN_PANEL_LEGACY_DOMAIN
+                    'Modules.Psdynamicadminpanel.Admin'
                 );
             }
         }
@@ -144,7 +141,7 @@ class SettingsValidator
                         '%field%' => $key,
                         '%type%' => $field['type']
                     ],
-                    PS_ADMIN_PANEL_LEGACY_DOMAIN
+                    'Modules.Psdynamicadminpanel.Admin'
                 );
             }
         }

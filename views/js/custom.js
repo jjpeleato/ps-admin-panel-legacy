@@ -1,7 +1,7 @@
 (function ($) {
   $(document).ready(function () {
     const moduleForm = $("#module_form");
-    if (!moduleForm.hasClass("ps_admin_panel_legacy")) {
+    if (!moduleForm.hasClass("ps_dynamic_admin_panel")) {
       return;
     }
 
@@ -54,7 +54,9 @@
           if (result.success) {
             domThumbnail.remove();
             domActions.remove();
-            window.showSuccessMessage(result.message || "Image deleted successfully.");
+            window.showSuccessMessage(
+              result.message || "Image deleted successfully."
+            );
           } else {
             window.showErrorMessage(result.message || "Error deleting image.");
           }
