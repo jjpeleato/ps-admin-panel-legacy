@@ -21,7 +21,7 @@
 
 declare(strict_types=1);
 
-namespace PrestaShop\Module\PsAdminPanelLegacy\Native\Classes;
+namespace PrestaShop\Module\PsDynamicAdminPanel\Native\Classes;
 
 use Configuration;
 use Context;
@@ -37,6 +37,12 @@ if (!defined('_PS_VERSION_')) {
 }
 // phpcs:enable
 
+/**
+ * Abstract class MediaHandler
+ *
+ * This class provides methods for handling media uploads, deletions, and validations.
+ * It is designed to be extended by specific media handlers (e.g., ImageHandler, VideoHandler).
+ */
 abstract class MediaHandler
 {
     /** @var Translator $translator */
@@ -86,7 +92,7 @@ abstract class MediaHandler
                 'error' => $this->translator->trans(
                     'Upload directory could not be created.',
                     [],
-                    PS_ADMIN_PANEL_LEGACY_DOMAIN
+                    'Modules.Psdynamicadminpanel.Admin'
                 ),
             ];
         }
@@ -123,7 +129,7 @@ abstract class MediaHandler
                     'error' => $this->translator->trans(
                         'An error occurred while attempting to run move_uploaded_file in the language: ' . $lang,
                         [],
-                        PS_ADMIN_PANEL_LEGACY_DOMAIN
+                        'Modules.Psdynamicadminpanel.Admin'
                     ),
                 ];
             }

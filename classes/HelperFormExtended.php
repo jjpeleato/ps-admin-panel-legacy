@@ -21,7 +21,7 @@
 
 declare(strict_types=1);
 
-namespace PrestaShop\Module\PsAdminPanelLegacy\Native\Classes;
+namespace PrestaShop\Module\PsDynamicAdminPanel\Native\Classes;
 
 // phpcs:disable
 /**
@@ -40,10 +40,10 @@ use Module;
 use Tools;
 
 /**
- * HelperFormExtended class for managing the installation and uninstallation of tabs in the back office.
+ * Class HelperFormExtended
  *
- * This class provides methods to install and uninstall a tab in the back office of PrestaShop.
- * It is used to manage the AdminPanelLegacy tab.
+ * This class extends the functionality of the HelperForm class
+ * to provide additional features for the dynamic admin panel.
  */
 class HelperFormExtended
 {
@@ -77,10 +77,10 @@ class HelperFormExtended
         $this->fields = $fields;
 
         // Initialize the image handler.
-        $this->imageHandler = new ImageHandler(PS_ADMIN_PANEL_LEGACY_UPLOAD_DIR);
+        $this->imageHandler = new ImageHandler(PS_DYNAMIC_ADMIN_PANEL_UPLOAD_DIR);
 
         // Initialize the video handler.
-        $this->videoHandler = new VideoHandler(PS_ADMIN_PANEL_LEGACY_UPLOAD_DIR);
+        $this->videoHandler = new VideoHandler(PS_DYNAMIC_ADMIN_PANEL_UPLOAD_DIR);
     }
 
     /**
@@ -144,11 +144,11 @@ class HelperFormExtended
             'form' => [
                 'tinymce' => true,
                 'legend' => [
-                    'title' => $this->translator->trans('Settings', [], PS_ADMIN_PANEL_LEGACY_DOMAIN),
+                    'title' => $this->translator->trans('Settings', [], 'Modules.Psdynamicadminpanel.Admin'),
                     'icon' => 'icon-cogs'
                 ],
                 'submit' => [
-                    'title' => $this->translator->trans('Save', [], PS_ADMIN_PANEL_LEGACY_DOMAIN),
+                    'title' => $this->translator->trans('Save', [], 'Modules.Psdynamicadminpanel.Admin'),
                 ],
             ],
         ];
@@ -179,12 +179,12 @@ class HelperFormExtended
                     [
                         'id' => $field['machine_name'] . '_on',
                         'value' => 1,
-                        'label' => $this->translator->trans('Enabled', [], PS_ADMIN_PANEL_LEGACY_DOMAIN),
+                        'label' => $this->translator->trans('Enabled', [], 'Modules.Psdynamicadminpanel.Admin'),
                     ],
                     [
                         'id' => $field['machine_name'] . '_off',
                         'value' => 0,
-                        'label' => $this->translator->trans('Disabled', [], PS_ADMIN_PANEL_LEGACY_DOMAIN),
+                        'label' => $this->translator->trans('Disabled', [], 'Modules.Psdynamicadminpanel.Admin'),
                     ]
                 ];
             }
@@ -298,7 +298,7 @@ class HelperFormExtended
                             '%field%' => $field['label'],
                             '%lang%' => $localeLang
                         ],
-                        PS_ADMIN_PANEL_LEGACY_DOMAIN
+                        'Modules.Psdynamicadminpanel.Admin'
                     );
                     continue;
                 }
@@ -312,7 +312,7 @@ class HelperFormExtended
                     [
                         '%key%' => $key
                     ],
-                    PS_ADMIN_PANEL_LEGACY_DOMAIN
+                    'Modules.Psdynamicadminpanel.Admin'
                 );
             }
         }
@@ -339,7 +339,7 @@ class HelperFormExtended
                     [
                         '%field%' => $field['label']
                     ],
-                    PS_ADMIN_PANEL_LEGACY_DOMAIN
+                    'Modules.Psdynamicadminpanel.Admin'
                 )
             ];
         }
@@ -351,7 +351,7 @@ class HelperFormExtended
                     [
                         '%key%' => $key
                     ],
-                    PS_ADMIN_PANEL_LEGACY_DOMAIN
+                    'Modules.Psdynamicadminpanel.Admin'
                 )
             ];
         }

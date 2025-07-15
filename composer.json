@@ -1,5 +1,5 @@
 {
-	"name": "jjpeleato/ps-admin-panel-legacy",
+	"name": "jjpeleato/ps-dynamic-admin-panel",
 	"description": "A PrestaShop module that adds a customizable admin panel to the back office, supporting multilingual and multistore configurations. Designed for PrestaShop 1.7.6.0 to 8.2.1.",
 	"keywords": [
 		"php",
@@ -9,7 +9,7 @@
 		"psr12"
 	],
   "type": "prestashop-module",
-	"homepage": "https://github.com/jjpeleato/ps-admin-panel-legacy.git",
+	"homepage": "https://github.com/jjpeleato/ps-dynamic-admin-panel.git",
 	"license": "GPL-3.0-only",
 	"authors": [
 		{
@@ -29,8 +29,8 @@
 	},
   "autoload": {
 		"psr-4": {
-      "PrestaShop\\Module\\PsAdminPanelLegacy\\Helper\\Includes\\": "includes/",
-      "PrestaShop\\Module\\PsAdminPanelLegacy\\Native\\Classes\\": "classes/"
+      "PrestaShop\\Module\\PsDynamicAdminPanel\\Helper\\Includes\\": "includes/",
+      "PrestaShop\\Module\\PsDynamicAdminPanel\\Native\\Classes\\": "classes/"
 		},
 		"files": [
 			"settings.php"

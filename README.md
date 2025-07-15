@@ -1,6 +1,8 @@
-# PrestaShop: Admin Panel (Legacy)
+# PrestaShop: Dynamic Admin Panel
 
 This module facilitates the creation and management of custom administration panels within PrestaShop’s back office. It automatically generates configuration forms based on the `settings.php` file, incorporating various types of fields such as text, HTML, switches, images, and videos.
+
+![Dynamic admin panel view](assets-dashboard.png)
 
 ### The problem
 
@@ -39,22 +41,22 @@ For more information visit:
 
 1. Clone or download this repository into the `modules` directory of your PrestaShop installation.
    ```bash
-   git clone https://github.com/jjpeleato/ps-admin-panel-legacy.git
+   git clone https://github.com/jjpeleato/ps-dynamic-admin-panel.git
    ```
 2. Search and replace all occurrences with your new module name throughout the project files. Remember to activate the search: "Match uppercase and lowercase".
-  - Rename the module directory from `ps_admin_panel_legacy` to `your_new_module_name`.
-  - Rename the main module file from `ps_admin_panel_legacy.php` to `your_new_module_name.php`. Remember that both must match to work correctly.
-  - Rename `ps-admin-panel-legacy` to `your-new-module-name`.
-  - Rename `Ps_Admin_Panel_Legacy` to `Your_New_Module_Name`.
-  - Rename `ps_admin_panel_legacy` to `your_new_module_name`.
-  - Rename `PsAdminPanelLegacy` to `PsYourNewModuleName`.
-  - Rename `PS_ADMIN_PANEL_LEGACY_` to `YOUR_NEW_MODULE_NAME_`.
-  - Rename the `AdminPanelLegacyController` file to `AdminYourNewModuleNameController`. Remember that it is mandatory to use the prefix `Admin` and the suffix `Controller`.
-  - Update the `PS_ADMIN_PANEL_LEGACY_NAME` constant in `settings.php` to use the exact same name `AdminYourNewModuleName`. Both must match for the panel to work correctly.
-  - Change the value of `PS_ADMIN_PANEL_LEGACY_DOMAIN` in `settings.php` to your new domain name: `Modules.Yournewmodulename.Admin`.
+  - Rename the module directory from `ps_dynamic_admin_panel` to `your_new_module_name`.
+  - Rename the main module file from `ps_dynamic_admin_panel.php` to `your_new_module_name.php`. Remember that both must match to work correctly.
+  - Replace `ps_dynamic_admin_panel` to `your_new_module_name`.
+  - Replace `ps-dynamic-admin-panel` to `your-new-module-name`.
+  - Replace `Ps_Dynamic_Admin_Panel` to `Your_New_Module_Name`.
+  - Replace `PsDynamicAdminPanel` to `PsYourNewModuleName`.
+  - Replace `PS_DYNAMIC_ADMIN_PANEL_` to `YOUR_NEW_MODULE_NAME_`.
+  - Replace `Modules.Psdynamicadminpanel.Admin` to `Modules.Yournewmodulename.Admin`.
+  - Rename the `AdminDynamicPanelController` file to `AdminYourNewModuleNameController`. Remember that it is mandatory to use the prefix `Admin` and the suffix `Controller`.
+  - Update the `PS_DYNAMIC_ADMIN_PANEL_NAME` constant in `settings.php` to use the exact same name `AdminYourNewModuleName`. Both must match for the panel to work correctly.
 3. Navigate to the module directory:
    ```bash
-   cd modules/ps_admin_panel_legacy
+   cd modules/ps_dynamic_admin_panel
    ```
 4. Install the dependencies using Composer:
    ```bash
@@ -72,14 +74,26 @@ For more information visit:
 
 The `settings.php` file is the core of the module's configuration. It is used to define the structure and content of the admin panel, and should be placed in the root directory of the module.
 
-Currently, the module supports five field types: `switch`, `text`, `html`, `video` and `image`. To add, modify, or remove fields in the admin panel, you need to use the constant `PS_ADMIN_PANEL_LEGACY_FIELDS`.
+Currently, the module supports five field types: `switch`, `text`, `html`, `video` and `image`. To add, modify, or remove fields in the admin panel, you need to use the constant `PS_DYNAMIC_ADMIN_PANEL_FIELDS`.
 
 As a reference, you can check the `settings.php` file, which includes a complete example with all available configuration options for the fields.
+
+### Usage the module
+
+To use the module, follow these steps:
+
+1. Install the module in the PrestaShop back office.
+   - Go to the "Modules" section and click on "Module Manager".
+   - Search for `PrestaShop Admin Panel` and install it.
+   - If you have renamed the module, ensure that you search for the new name.
+2. Navigate to the module configuration page.
+3. Add content in the back office using the provided fields and save the changes.
+5. Use the widget `{widget name="ps_dynamic_admin_panel"}` wherever you want to display the html block.
 
 ### Project structure
 
 ```
-ps_admin_panel_legacy/
+ps_dynamic_admin_panel/
 ├── .husky/ # Husky hooks for Git
 │   ├── commit-msg
 │   ├── post-merge
@@ -96,7 +110,7 @@ ps_admin_panel_legacy/
 │   └── VideoHandler.php # Class for handling video uploads
 ├── controllers/
 │   ├── admin/
-│   │   ├── AdminPanelLegacyController.php # Handles the AJAX request to delete media files
+│   │   ├── AdminDynamicPanelController.php # Handles the AJAX request to delete media files
 │   │   └── index.php
 │   └── index.php
 ├── upload/ # Directory for uploaded media files
@@ -132,7 +146,7 @@ ps_admin_panel_legacy/
 ├── logo.png
 ├── package.json
 ├── phpcs.xml
-├── ps_admin_panel_legacy.php # Main module file
+├── ps_dynamic_admin_panel.php # Main module file
 ├── README.md
 └── settings.php # Configuration file for the module
 ```

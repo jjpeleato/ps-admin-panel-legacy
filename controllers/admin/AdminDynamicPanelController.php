@@ -31,15 +31,15 @@ if (!defined('_PS_VERSION_')) {
 // phpcs:enable
 
 /**
- * Class AdminPanelLegacyController
+ * AdminDynamicPanelController class
  *
- * @since 0.1.0
- * @author @jjpeleato
+ * This class handles the AJAX request to delete media files in the dynamic admin panel.
+ * It extends the ModuleAdminController class to provide the necessary functionality.
  */
-class AdminPanelLegacyController extends ModuleAdminController
+class AdminDynamicPanelController extends ModuleAdminController
 {
     /**
-     * AdminPanelLegacyController constructor.
+     * AdminDynamicPanelController constructor.
      */
     public function __construct()
     {
@@ -73,7 +73,7 @@ class AdminPanelLegacyController extends ModuleAdminController
             ]);
         }
 
-        $mediaPath = PS_ADMIN_PANEL_LEGACY_UPLOAD_DIR . $filename;
+        $mediaPath = PS_DYNAMIC_ADMIN_PANEL_UPLOAD_DIR . $filename;
 
         if (!file_exists($mediaPath)) {
             return $this->ajaxRenderJson([
