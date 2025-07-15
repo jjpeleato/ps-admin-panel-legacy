@@ -21,7 +21,7 @@
 
 declare(strict_types=1);
 
-namespace PrestaShop\Module\PsAdminPanelLegacy\Native\Classes;
+namespace PrestaShop\Module\PsDynamicAdminPanel\Native\Classes;
 
 // phpcs:disable
 /**
@@ -63,10 +63,10 @@ class Uninstaller
         $this->fields = $fields;
 
         // Initialize the image handler.
-        $this->imageHandler = new ImageHandler(PS_ADMIN_PANEL_LEGACY_UPLOAD_DIR);
+        $this->imageHandler = new ImageHandler(PS_DYNAMIC_ADMIN_PANEL_UPLOAD_DIR);
 
         // Initialize the video handler.
-        $this->videoHandler = new VideoHandler(PS_ADMIN_PANEL_LEGACY_UPLOAD_DIR);
+        $this->videoHandler = new VideoHandler(PS_DYNAMIC_ADMIN_PANEL_UPLOAD_DIR);
     }
 
     /**

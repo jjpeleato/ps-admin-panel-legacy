@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Ps_Admin_Panel_Legacy
+ * Ps_Dynamic_Admin_Panel
  *
  * This module adds an admin panel to the back office, allowing easy configuration of different types of fields.
  *
@@ -29,21 +29,21 @@ if (file_exists(__DIR__ . '/vendor/autoload.php') === true) {
 }
 // phpcs:enable
 
-use PrestaShop\Module\PsAdminPanelLegacy\Helper\Includes\SettingsValidator;
-use PrestaShop\Module\PsAdminPanelLegacy\Native\Classes\HelperFormExtended;
-use PrestaShop\Module\PsAdminPanelLegacy\Native\Classes\Installer;
-use PrestaShop\Module\PsAdminPanelLegacy\Native\Classes\TabInstaller;
-use PrestaShop\Module\PsAdminPanelLegacy\Native\Classes\Uninstaller;
+use PrestaShop\Module\PsDynamicAdminPanel\Helper\Includes\SettingsValidator;
+use PrestaShop\Module\PsDynamicAdminPanel\Native\Classes\HelperFormExtended;
+use PrestaShop\Module\PsDynamicAdminPanel\Native\Classes\Installer;
+use PrestaShop\Module\PsDynamicAdminPanel\Native\Classes\TabInstaller;
+use PrestaShop\Module\PsDynamicAdminPanel\Native\Classes\Uninstaller;
 use PrestaShop\PrestaShop\Core\Module\WidgetInterface;
 
 /**
- * Class Ps_Admin_Panel_Legacy
+ * Class Ps_Dynamic_Admin_Panel
  *
  * @since 0.1.0
  * @author @jjpeleato
  */
 //phpcs:ignore
-class Ps_Admin_Panel_Legacy extends Module implements WidgetInterface
+class Ps_Dynamic_Admin_Panel extends Module implements WidgetInterface
 {
     /** @var array $shops */
     private array $shops = [];
@@ -70,11 +70,11 @@ class Ps_Admin_Panel_Legacy extends Module implements WidgetInterface
     private HelperFormExtended $helperFormExtended;
 
     /**
-     * Ps_Admin_Panel_Legacy constructor.
+     * Ps_Dynamic_Admin_Panel constructor.
      */
     public function __construct()
     {
-        $this->name = 'ps_admin_panel_legacy';
+        $this->name = 'ps_dynamic_admin_panel';
         $this->tab = 'front_office_features';
         $this->version = '0.1.0';
         $this->author = '@jjpeleato';
@@ -85,18 +85,18 @@ class Ps_Admin_Panel_Legacy extends Module implements WidgetInterface
             'max' => '8.2.1'
         ];
         $this->bootstrap = true;
-        $this->displayName = $this->trans('PrestaShop Admin Panel', [], PS_ADMIN_PANEL_LEGACY_DOMAIN);
+        $this->displayName = $this->trans('PrestaShop: Dynamic Admin Panel', [], 'Modules.Psdynamicadminpanel.Admin');
         $this->description = $this->trans(
             'PrestaShop module that adds an admin panel to the back office, allowing easy configuration of different types of fields.',
             [],
-            PS_ADMIN_PANEL_LEGACY_DOMAIN
+            'Modules.Psdynamicadminpanel.Admin'
         );
-        $this->confirmUninstall = $this->trans('Are you sure you want to uninstall?', [], PS_ADMIN_PANEL_LEGACY_DOMAIN);
+        $this->confirmUninstall = $this->trans('Are you sure you want to uninstall?', [], 'Modules.Psdynamicadminpanel.Admin');
 
         // Set the module's configuration.
         $this->shops = Shop::getShops();
         $this->languages = Language::getLanguages(false);
-        $this->fields = PS_ADMIN_PANEL_LEGACY_FIELDS;
+        $this->fields = PS_DYNAMIC_ADMIN_PANEL_FIELDS;
 
         // Initialize the tab installer.
         $this->tabInstaller = new TabInstaller($this->name);
@@ -192,7 +192,7 @@ class Ps_Admin_Panel_Legacy extends Module implements WidgetInterface
 
             if ($idShop === 0) {
                 return $this->displayInformation(
-                    $this->trans('You must select a store.', [], PS_ADMIN_PANEL_LEGACY_DOMAIN)
+                    $this->trans('You must select a store.', [], 'Modules.Psdynamicadminpanel.Admin')
                 );
             }
         }
@@ -213,7 +213,7 @@ class Ps_Admin_Panel_Legacy extends Module implements WidgetInterface
 
             if (empty($errors) === true) {
                 $output = $this->displayConfirmation(
-                    $this->trans('The settings have been updated.', [], PS_ADMIN_PANEL_LEGACY_DOMAIN)
+                    $this->trans('The settings have been updated.', [], 'Modules.Psdynamicadminpanel.Admin')
                 );
             } else {
                 // If there are errors, display them.
@@ -244,8 +244,8 @@ class Ps_Admin_Panel_Legacy extends Module implements WidgetInterface
     private function addJsDefList()
     {
         Media::addJsDef([
-            'psapl_controller_delete_url' => $this->context->link->getAdminLink(PS_ADMIN_PANEL_LEGACY_NAME),
-            'psapl_controller_delete' => PS_ADMIN_PANEL_LEGACY_NAME,
+            'psapl_controller_delete_url' => $this->context->link->getAdminLink(PS_DYNAMIC_ADMIN_PANEL_NAME),
+            'psapl_controller_delete' => PS_DYNAMIC_ADMIN_PANEL_NAME,
         ]);
     }
 
