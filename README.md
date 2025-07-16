@@ -183,6 +183,10 @@ Contributions are welcome! Please follow the coding standards defined in `phpcs.
 
 For issues or feature requests, please open an issue in the repository or contact with me directly.
 
+## Acknowledgments
+
+If you find this module useful, feel free to leave a star as a sign of support. You're also welcome to share your feedback in the PrestaShop forums—both in the [Spanish-speaking](https://www.prestashop.com/forums/topic/1100217-m%C3%B3dulo-gratuito-crea-paneles-de-administraci%C3%B3n-de-forma-din%C3%A1mica-en-prestashop/) thread and the one for the [English-speaking](https://www.prestashop.com/forums/topic/1100219-free-module-create-dynamic-admin-panels-in-prestashop/) community, where I’ve shared the module. Your opinion is always appreciated!
+
 ## Finally
 
 More information on the following commits. If required.
