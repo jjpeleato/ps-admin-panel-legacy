@@ -47,19 +47,19 @@ use Tools;
  */
 class HelperFormExtended
 {
-    /** @var Translator $translator */
+    /** @var Translator */
     private $translator;
 
-    /** @var array $languages */
+    /** @var array */
     private array $languages = [];
 
-    /** @var array $fields */
+    /** @var array */
     private array $fields = [];
 
-    /** @var ImageHandler $imageHandler */
+    /** @var ImageHandler */
     private ImageHandler $imageHandler;
 
-    /** @var VideoHandler $videoHandler */
+    /** @var VideoHandler */
     private VideoHandler $videoHandler;
 
     /**
@@ -94,7 +94,6 @@ class HelperFormExtended
      * @param string $name
      * @param string $identifier
      * @param string $pathUri
-     *
      * @return string
      */
     public function renderForm(
@@ -265,7 +264,6 @@ class HelperFormExtended
      *
      * @param string $key
      * @param array $field
-     *
      * @return array
      */
     private function processMultiLanguageField(string $key = '', array $field = []): array
@@ -325,7 +323,6 @@ class HelperFormExtended
      *
      * @param string $key
      * @param array $field
-     *
      * @return array
      */
     private function processSingleLanguageField(string $key = '', array $field = []): array

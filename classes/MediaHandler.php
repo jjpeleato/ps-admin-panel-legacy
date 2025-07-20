@@ -25,6 +25,7 @@ namespace PrestaShop\Module\PsDynamicAdminPanel\Native\Classes;
 use Configuration;
 use Context;
 use ImageManager;
+use PrestaShopBundle\Translation\TranslatorComponent as Translator;
 use Shop;
 
 // phpcs:disable
@@ -44,19 +45,19 @@ if (!defined('_PS_VERSION_')) {
  */
 abstract class MediaHandler
 {
-    /** @var Translator $translator */
+    /** @var Translator */
     protected $translator;
 
-    /** @var string $path */
+    /** @var string */
     protected string $path = '';
 
-    /** @var int $maxFileSize */
+    /** @var int */
     protected int $maxFileSize = 0;
 
-    /** @var array $authExtensions. */
+    /** @var array */
     protected array $authExtensions = [];
 
-    /** @var array $authMimeType. */
+    /** @var array */
     protected array $authMimeType = [];
 
     /**
@@ -72,10 +73,9 @@ abstract class MediaHandler
     /**
      * Uploads media to the configured directory.
      *
-     * @param array $file The file data array (e.g., $_FILES['field']).
+     * @param array $files The file data array (e.g., $_FILES['field']).
      * @param string $key The configuration key for the media.
      * @param int $lang The language ID for the configuration.
-     *
      * @return array {
      *     @type bool   $success  True if upload succeeded, false otherwise.
      *     @type string $filename The sanitized file name.
@@ -156,7 +156,6 @@ abstract class MediaHandler
      * @param string $key The configuration key for the media.
      * @param int $lang The language ID for the configuration.
      * @param string $filename The name of the file to delete.
-     *
      * @return bool True if the file was deleted, false otherwise.
      */
     protected function deleteMedia(string $key = '', int $lang = 0, string $filename = ''): bool
@@ -190,7 +189,6 @@ abstract class MediaHandler
      * Sanitizes the file name to prevent security issues.
      *
      * @param string $filename
-     *
      * @return string
      */
     protected function sanitizeFileName(string $filename = ''): string

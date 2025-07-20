@@ -41,13 +41,13 @@ use Configuration;
  */
 class Uninstaller
 {
-    /** @var array $fields */
+    /** @var array */
     private array $fields = [];
 
-    /** @var ImageHandler $imageHandler */
+    /** @var ImageHandler */
     private ImageHandler $imageHandler;
 
-    /** @var VideoHandler $videoHandler */
+    /** @var VideoHandler */
     private VideoHandler $videoHandler;
 
     /**

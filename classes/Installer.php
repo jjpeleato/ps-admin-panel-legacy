@@ -42,13 +42,13 @@ use PrestaShopLogger;
  */
 class Installer
 {
-    /** @var array $shops */
+    /** @var array */
     private array $shops = [];
 
-    /** @var array $languages */
+    /** @var array */
     private array $languages = [];
 
-    /** @var array $fields */
+    /** @var array */
     private array $fields = [];
 
     /**
@@ -99,7 +99,6 @@ class Installer
      *
      * @param int $idShopGroup
      * @param int $idShop
-     *
      * @return bool
      */
     public function installShopFixture(int $idShopGroup = 0, int $idShop = 0): bool
@@ -129,7 +128,6 @@ class Installer
      * @param int $idLang
      * @param int $idShopGroup
      * @param int $idShop
-     *
      * @return bool
      */
     public function installLanguageFixture(int $idLang = 0, int $idShopGroup = 0, int $idShop = 0): bool

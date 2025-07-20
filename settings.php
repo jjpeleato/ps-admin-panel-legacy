@@ -29,7 +29,6 @@ if (!defined('_PS_VERSION_')) {
 }
 // phpcs:enable
 
-/** @var string PS_DYNAMIC_ADMIN_PANEL_UPLOAD_DIR */
 define('PS_DYNAMIC_ADMIN_PANEL_UPLOAD_DIR', dirname(__FILE__) . DIRECTORY_SEPARATOR . 'upload' . DIRECTORY_SEPARATOR);
 
 /** @var string PS_DYNAMIC_ADMIN_PANEL_NAME */

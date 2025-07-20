@@ -50,47 +50,51 @@ class AdminDynamicPanelController extends ModuleAdminController
      *
      * @return void
      */
-    public function displayAjaxDeleteMedia()
+    public function displayAjaxDeleteMedia(): void
     {
         $body = Tools::getValue('body');
         $name = $body['name'] ?? '';
         $idLang = (int) $body['lang'];
 
         if (!$name || !$idLang) {
-            return $this->ajaxRenderJson([
+            $this->ajaxRenderJson([
                 'success' => false,
                 'message' => 'Missing required parameters.',
             ]);
+            exit;
         }
 
         $filename = Configuration::get($name, $idLang);
 
         if (!$filename) {
-            return $this->ajaxRenderJson([
+            $this->ajaxRenderJson([
                 'success' => false,
                 'message' => 'No media registered for this field and language.',
             ]);
+            exit;
         }
 
         $mediaPath = PS_DYNAMIC_ADMIN_PANEL_UPLOAD_DIR . $filename;
 
         if (!file_exists($mediaPath)) {
-            return $this->ajaxRenderJson([
+            $this->ajaxRenderJson([
                 'success' => false,
                 'message' => 'Media file not found on server.',
             ]);
+            exit;
         }
 
         if (!@unlink($mediaPath)) {
-            return $this->ajaxRenderJson([
+            $this->ajaxRenderJson([
                 'success' => false,
                 'message' => 'Unable to delete the media file.',
             ]);
+            exit;
         }
 
         Configuration::updateValue($name, [$idLang => '']);
 
-        return $this->ajaxRenderJson([
+        $this->ajaxRenderJson([
             'success' => true,
             'message' => 'Media deleted successfully.',
         ]);
@@ -100,6 +104,8 @@ class AdminDynamicPanelController extends ModuleAdminController
      * Renders a JSON response.
      *
      * @param mixed $content The content to be rendered as JSON.
+     *
+     * @return void
      */
     private function ajaxRenderJson($content): void
     {

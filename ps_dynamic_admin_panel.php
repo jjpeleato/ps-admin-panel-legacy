@@ -56,28 +56,28 @@ use PrestaShop\PrestaShop\Core\Module\WidgetInterface;
 //phpcs:ignore
 class Ps_Dynamic_Admin_Panel extends Module implements WidgetInterface
 {
-    /** @var array $shops */
+    /** @var array */
     private array $shops = [];
 
-    /** @var array $languages */
+    /** @var array */
     private array $languages = [];
 
-    /** @var array $fields */
+    /** @var array */
     private array $fields = [];
 
-    /** @var TabInstaller $tabInstaller */
+    /** @var TabInstaller */
     private TabInstaller $tabInstaller;
 
-    /** @var Installer $installer */
+    /** @var Installer */
     private Installer $installer;
 
-    /** @var Uninstaller $uninstaller */
+    /** @var Uninstaller */
     private Uninstaller $uninstaller;
 
-    /** @var SettingsValidator $settingsValidator */
+    /** @var SettingsValidator */
     private SettingsValidator $settingsValidator;
 
-    /** @var HelperFormExtended $helperFormExtended */
+    /** @var HelperFormExtended */
     private HelperFormExtended $helperFormExtended;
 
     /**

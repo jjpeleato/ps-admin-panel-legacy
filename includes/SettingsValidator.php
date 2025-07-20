@@ -32,6 +32,7 @@ if (!defined('_PS_VERSION_')) {
 // phpcs:enable
 
 use Context;
+use PrestaShopBundle\Translation\TranslatorComponent as Translator;
 
 /**
  * Class SettingsValidator
@@ -40,10 +41,10 @@ use Context;
  */
 class SettingsValidator
 {
-    /** @var Translator $translator */
+    /** @var Translator */
     protected $translator;
 
-    /** @var array $fields */
+    /** @var array */
     private array $fields = [];
 
     /**

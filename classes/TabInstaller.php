@@ -41,7 +41,7 @@ use Tab;
  */
 class TabInstaller
 {
-    /** @var string $name */
+    /** @var string */
     private string $name = '';
 
     /**
