@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Copyright since 2007 PrestaShop SA and Contributors
  * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
@@ -18,22 +17,18 @@
  * @copyright Since 2007 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/AFL-3.0 Academic Free License version 3.0
  */
-
 declare(strict_types=1);
 
 namespace PrestaShop\Module\PsDynamicAdminPanel\Native\Classes;
 
+use Configuration;
+use PrestaShopLogger;
+
 // phpcs:disable
-/**
- * If this file is called directly, then abort execution.
- */
 if (!defined('_PS_VERSION_')) {
     exit;
 }
 // phpcs:enable
-
-use Configuration;
-use PrestaShopLogger;
 
 /**
  * Class Installer
@@ -43,13 +38,13 @@ use PrestaShopLogger;
  */
 class Installer
 {
-    /** @var array $shops */
+    /** @var array */
     private array $shops = [];
 
-    /** @var array $languages */
+    /** @var array */
     private array $languages = [];
 
-    /** @var array $fields */
+    /** @var array */
     private array $fields = [];
 
     /**
@@ -100,7 +95,6 @@ class Installer
      *
      * @param int $idShopGroup
      * @param int $idShop
-     *
      * @return bool
      */
     public function installShopFixture(int $idShopGroup = 0, int $idShop = 0): bool
@@ -130,7 +124,6 @@ class Installer
      * @param int $idLang
      * @param int $idShopGroup
      * @param int $idShop
-     *
      * @return bool
      */
     public function installLanguageFixture(int $idLang = 0, int $idShopGroup = 0, int $idShop = 0): bool

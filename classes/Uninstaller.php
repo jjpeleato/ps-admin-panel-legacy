@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Copyright since 2007 PrestaShop SA and Contributors
  * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
@@ -18,21 +17,18 @@
  * @copyright Since 2007 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/AFL-3.0 Academic Free License version 3.0
  */
-
 declare(strict_types=1);
 
 namespace PrestaShop\Module\PsDynamicAdminPanel\Native\Classes;
 
+use Configuration;
+use const PS_DYNAMIC_ADMIN_PANEL_UPLOAD_DIR;
+
 // phpcs:disable
-/**
- * If this file is called directly, then abort execution.
- */
 if (!defined('_PS_VERSION_')) {
     exit;
 }
 // phpcs:enable
-
-use Configuration;
 
 /**
  * Class Uninstaller
@@ -42,13 +38,13 @@ use Configuration;
  */
 class Uninstaller
 {
-    /** @var array $fields */
+    /** @var array */
     private array $fields = [];
 
-    /** @var ImageHandler $imageHandler */
+    /** @var ImageHandler */
     private ImageHandler $imageHandler;
 
-    /** @var VideoHandler $videoHandler */
+    /** @var VideoHandler */
     private VideoHandler $videoHandler;
 
     /**
@@ -56,7 +52,7 @@ class Uninstaller
      *
      * Initializes the uninstaller with the fields to be deleted.
      *
-     * @param array $fields An associative array where keys are configuration field names to be deleted.
+     * @param array $fields
      */
     public function __construct(array $fields = [])
     {
@@ -72,7 +68,7 @@ class Uninstaller
     /**
      * Uninstalls the module by deleting all images and configuration fields.
      *
-     * @return bool Returns true if the uninstallation was successful, false otherwise.
+     * @return bool Returns true if the uninstallation was successful, false otherwise
      */
     public function uninstall(): bool
     {
@@ -86,7 +82,7 @@ class Uninstaller
     /**
      * Uninstalls the fixtures by deleting the specified configuration fields.
      *
-     * @return bool Returns true if all fields were successfully deleted, false otherwise.
+     * @return bool returns true if all fields were successfully deleted, false otherwise
      */
     private function uninstallFixtures(): bool
     {

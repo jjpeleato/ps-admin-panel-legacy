@@ -1,4 +1,41 @@
 <?php
+/**
+ * Copyright since 2007 PrestaShop SA and Contributors
+ * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Academic Free License version 3.0
+ * that is bundled with this package in the file LICENSE.md.
+ * It is also available through the world-wide-web at this URL:
+ * https://opensource.org/licenses/AFL-3.0
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to license@prestashop.com so we can send you a copy immediately.
+ *
+ * @author    PrestaShop SA and Contributors <contact@prestashop.com>
+ * @copyright Since 2007 PrestaShop SA and Contributors
+ * @license   https://opensource.org/licenses/AFL-3.0 Academic Free License version 3.0
+ */
+declare(strict_types=1);
+
+// phpcs:disable
+if (!defined('_PS_VERSION_')) {
+    exit;
+}
+if (file_exists(__DIR__ . '/vendor/autoload.php') === true) {
+    require_once __DIR__ . '/vendor/autoload.php';
+}
+// phpcs:enable
+
+use PrestaShop\Module\PsDynamicAdminPanel\Helper\Includes\SettingsValidator;
+use PrestaShop\Module\PsDynamicAdminPanel\Native\Classes\HelperFormExtended;
+use PrestaShop\Module\PsDynamicAdminPanel\Native\Classes\Installer;
+use PrestaShop\Module\PsDynamicAdminPanel\Native\Classes\TabInstaller;
+use PrestaShop\Module\PsDynamicAdminPanel\Native\Classes\Uninstaller;
+use PrestaShop\PrestaShop\Core\Module\WidgetInterface;
+
+use const PS_DYNAMIC_ADMIN_PANEL_NAME;
 
 /**
  * Ps_Dynamic_Admin_Panel
@@ -13,60 +50,31 @@
  * @see       https://devdocs.prestashop-project.org/1.7/modules/creation/adding-configuration-page/
  * @see       https://devdocs.prestashop-project.org/8/modules/creation/adding-configuration-page/
  */
-
-declare(strict_types=1);
-
-// phpcs:disable
-/**
- * If this file is called directly, then abort execution.
- */
-if (!defined('_PS_VERSION_')) {
-    exit;
-}
-
-if (file_exists(__DIR__ . '/vendor/autoload.php') === true) {
-    require_once __DIR__ . '/vendor/autoload.php';
-}
-// phpcs:enable
-
-use PrestaShop\Module\PsDynamicAdminPanel\Helper\Includes\SettingsValidator;
-use PrestaShop\Module\PsDynamicAdminPanel\Native\Classes\HelperFormExtended;
-use PrestaShop\Module\PsDynamicAdminPanel\Native\Classes\Installer;
-use PrestaShop\Module\PsDynamicAdminPanel\Native\Classes\TabInstaller;
-use PrestaShop\Module\PsDynamicAdminPanel\Native\Classes\Uninstaller;
-use PrestaShop\PrestaShop\Core\Module\WidgetInterface;
-
-/**
- * Class Ps_Dynamic_Admin_Panel
- *
- * @since 0.1.0
- * @author @jjpeleato
- */
 //phpcs:ignore
 class Ps_Dynamic_Admin_Panel extends Module implements WidgetInterface
 {
-    /** @var array $shops */
+    /** @var array */
     private array $shops = [];
 
-    /** @var array $languages */
+    /** @var array */
     private array $languages = [];
 
-    /** @var array $fields */
+    /** @var array */
     private array $fields = [];
 
-    /** @var TabInstaller $tabInstaller */
+    /** @var TabInstaller */
     private TabInstaller $tabInstaller;
 
-    /** @var Installer $installer */
+    /** @var Installer */
     private Installer $installer;
 
-    /** @var Uninstaller $uninstaller */
+    /** @var Uninstaller */
     private Uninstaller $uninstaller;
 
-    /** @var SettingsValidator $settingsValidator */
+    /** @var SettingsValidator */
     private SettingsValidator $settingsValidator;
 
-    /** @var HelperFormExtended $helperFormExtended */
+    /** @var HelperFormExtended */
     private HelperFormExtended $helperFormExtended;
 
     /**
@@ -82,7 +90,7 @@ class Ps_Dynamic_Admin_Panel extends Module implements WidgetInterface
         $this->need_instance = 0;
         $this->ps_versions_compliancy = [
             'min' => '1.7.6.0',
-            'max' => '8.2.1'
+            'max' => '8.99.99',
         ];
         $this->bootstrap = true;
         $this->displayName = $this->trans('PrestaShop: Dynamic Admin Panel', [], 'Modules.Psdynamicadminpanel.Admin');
@@ -137,10 +145,10 @@ class Ps_Dynamic_Admin_Panel extends Module implements WidgetInterface
     {
         PrestaShopLogger::addLog("Installed module: $this->name", 1);
 
-        return parent::install() &&
-            $this->registerHook('actionAdminControllerSetMedia') &&
-            $this->tabInstaller->installTab() &&
-            $this->installer->installShopFixtures();
+        return parent::install()
+            && $this->registerHook('actionAdminControllerSetMedia')
+            && $this->tabInstaller->installTab()
+            && $this->installer->installShopFixtures();
     }
 
     /**
@@ -155,12 +163,12 @@ class Ps_Dynamic_Admin_Panel extends Module implements WidgetInterface
     {
         PrestaShopLogger::addLog("Uninstalled module: $this->name", 1);
 
-        $this->_clearCache('*'); // Clear module cache
+        $this->_clearCache('*');
 
-        return parent::uninstall() &&
-            $this->unregisterHook('actionAdminControllerSetMedia') &&
-            $this->tabInstaller->uninstallTab() &&
-            $this->uninstaller->uninstall();
+        return parent::uninstall()
+            && $this->unregisterHook('actionAdminControllerSetMedia')
+            && $this->tabInstaller->uninstallTab()
+            && $this->uninstaller->uninstall();
     }
 
     /**
@@ -172,6 +180,20 @@ class Ps_Dynamic_Admin_Panel extends Module implements WidgetInterface
     public function hookActionAdminControllerSetMedia(): void
     {
         $this->context->controller->addJS(_MODULE_DIR_ . $this->name . '/views/js/custom.js');
+    }
+
+    /**
+     * This method is used to add JavaScript definitions to the page.
+     * It is called when the module is displayed in the back office.
+     *
+     * @return void
+     */
+    private function addJsDefList()
+    {
+        Media::addJsDef([
+            'psapl_controller_delete_url' => $this->context->link->getAdminLink(PS_DYNAMIC_ADMIN_PANEL_NAME),
+            'psapl_controller_delete' => PS_DYNAMIC_ADMIN_PANEL_NAME,
+        ]);
     }
 
     /**
@@ -236,20 +258,6 @@ class Ps_Dynamic_Admin_Panel extends Module implements WidgetInterface
     }
 
     /**
-     * This method is used to add JavaScript definitions to the page.
-     * It is called when the module is displayed in the back office.
-     *
-     * @return void
-     */
-    private function addJsDefList()
-    {
-        Media::addJsDef([
-            'psapl_controller_delete_url' => $this->context->link->getAdminLink(PS_DYNAMIC_ADMIN_PANEL_NAME),
-            'psapl_controller_delete' => PS_DYNAMIC_ADMIN_PANEL_NAME,
-        ]);
-    }
-
-    /**
      * Implement the renderWidget method.
      *
      * This method is used to render the widget.
@@ -270,7 +278,8 @@ class Ps_Dynamic_Admin_Panel extends Module implements WidgetInterface
         $this->smarty->assign([
             'path' => $this->_path,
         ]);
-        return $this->fetch('module:' . $this->name . '/views/templates/widget/index.tpl');
+
+        return $this->fetch('module:' . $this->name . '/views/templates/front/index.tpl');
     }
 
     /**
@@ -289,13 +298,7 @@ class Ps_Dynamic_Admin_Panel extends Module implements WidgetInterface
         $idLang = $this->context->language->id;
 
         foreach ($this->fields as $key => $field) {
-            if ($field['lang'] === false) {
-                // If the field is not multilingual, get the value directly.
-                $variables[$field['machine_name']] = Configuration::get($key, null);
-                continue;
-            }
-
-            $variables[$field['machine_name']] = Configuration::get($key, $idLang);
+            $variables[$field['machine_name']] = Configuration::get($key, $field['lang'] ? $idLang : null);
         }
 
         return $variables;

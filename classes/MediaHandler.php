@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Copyright since 2007 PrestaShop SA and Contributors
  * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
@@ -18,7 +17,6 @@
  * @copyright Since 2007 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/AFL-3.0 Academic Free License version 3.0
  */
-
 declare(strict_types=1);
 
 namespace PrestaShop\Module\PsDynamicAdminPanel\Native\Classes;
@@ -26,12 +24,10 @@ namespace PrestaShop\Module\PsDynamicAdminPanel\Native\Classes;
 use Configuration;
 use Context;
 use ImageManager;
+use PrestaShopBundle\Translation\TranslatorComponent as Translator;
 use Shop;
 
 // phpcs:disable
-/**
- * If this file is called directly, then abort execution.
- */
 if (!defined('_PS_VERSION_')) {
     exit;
 }
@@ -45,19 +41,19 @@ if (!defined('_PS_VERSION_')) {
  */
 abstract class MediaHandler
 {
-    /** @var Translator $translator */
+    /** @var Translator */
     protected $translator;
 
-    /** @var string $path */
+    /** @var string */
     protected string $path = '';
 
-    /** @var int $maxFileSize */
+    /** @var int */
     protected int $maxFileSize = 0;
 
-    /** @var array $authExtensions. */
+    /** @var array */
     protected array $authExtensions = [];
 
-    /** @var array $authMimeType. */
+    /** @var array */
     protected array $authMimeType = [];
 
     /**
@@ -73,14 +69,13 @@ abstract class MediaHandler
     /**
      * Uploads media to the configured directory.
      *
-     * @param array $file The file data array (e.g., $_FILES['field']).
-     * @param string $key The configuration key for the media.
-     * @param int $lang The language ID for the configuration.
-     *
+     * @param array $files
+     * @param string $key
+     * @param int $lang
      * @return array {
-     *     @type bool   $success  True if upload succeeded, false otherwise.
-     *     @type string $filename The sanitized file name.
-     *     @type string $error    Error message if any.
+     *     @type bool   $success  true if upload succeeded, false otherwise
+     *     @type string $filename the sanitized file name
+     *     @type string $error    rrror message if any
      * }
      */
     public function uploadMedia(array $files = [], string $key = '', int $lang = 0): array
@@ -154,11 +149,10 @@ abstract class MediaHandler
     /**
      * Deletes a specific media file.
      *
-     * @param string $key The configuration key for the media.
-     * @param int $lang The language ID for the configuration.
-     * @param string $filename The name of the file to delete.
-     *
-     * @return bool True if the file was deleted, false otherwise.
+     * @param string $key
+     * @param int $lang
+     * @param string $filename
+     * @return bool true if the file was deleted, false otherwise
      */
     protected function deleteMedia(string $key = '', int $lang = 0, string $filename = ''): bool
     {
@@ -191,7 +185,6 @@ abstract class MediaHandler
      * Sanitizes the file name to prevent security issues.
      *
      * @param string $filename
-     *
      * @return string
      */
     protected function sanitizeFileName(string $filename = ''): string
