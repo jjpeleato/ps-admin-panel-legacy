@@ -3,24 +3,19 @@
 	name="ps-dynamic-admin-panel"
 	xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/squizlabs/PHP_CodeSniffer/master/phpcs.xsd"
 >
-	<!-- See https://github.com/squizlabs/PHP_CodeSniffer -->
-	<!-- See https://www.php-fig.org/psr/psr-1/ -->
-	<!-- See https://www.php-fig.org/psr/psr-2/ -->
-	<!-- See https://www.php-fig.org/psr/psr-12/ -->
-	<!-- See https://github.com/slevomat/coding-standard -->
-
 	<!-- Set a description for this ruleset. -->
 	<description>Sniffs for the coding standards of your project.</description>
 
 	<!-- Strip the filepaths down to the relevant bit. -->
 	<arg name="basepath" value="."/>
 
-	<!-- Check src folder -->
+	<!-- Check all PHP files in the project -->
 	<file>.</file>
 
 	<!-- Exclude assets folders and files from being checked. -->
-  <exclude-pattern>node_modules/</exclude-pattern>
-	<exclude-pattern>vendor/</exclude-pattern>
+	<exclude-pattern>*/node_modules/*</exclude-pattern>
+	<exclude-pattern>*/vendor/*</exclude-pattern>
+	<exclude-pattern>*/upload/*</exclude-pattern>
 
 	<!-- Strip the filepaths down to the relevant bit. -->
 	<arg name="parallel" value="8"/>
@@ -31,26 +26,22 @@
 	<!-- Only check the PHP files -->
 	<arg name="extensions" value="php"/>
 
-	<!--
-	Pass some flags to PHPCS:
-	- p flag: Show progress of the run.
-	- s flag: Show sniff codes in all reports.
-	-->
+	<!-- Pass some flags to PHPCS -->
 	<arg value="ps"/>
 
 	<!-- Full report -->
 	<arg name="report" value="full"/>
 
-	<!-- Inherit rules from: -->
+	<!-- Inherit rules from PSR1 -->
 	<rule ref="PSR1"/>
-  <rule ref="PSR1.Classes.ClassDeclaration.MissingNamespace">
-    <severity>0</severity>
-  </rule>
+	<rule ref="PSR1.Classes.ClassDeclaration.MissingNamespace">
+		<severity>0</severity>
+	</rule>
 
-	<!-- Inherit rules from: -->
+	<!-- Inherit rules from PSR12 -->
 	<rule ref="PSR12"/>
 
-	<!-- Inherit rules from: -->
+	<!-- Line length rule -->
 	<rule ref="Generic.Files.LineLength">
 		<properties>
 			<property name="lineLimit" value="140"/>
