@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Copyright since 2007 PrestaShop SA and Contributors
  * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
@@ -18,13 +17,11 @@
  * @copyright Since 2007 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/AFL-3.0 Academic Free License version 3.0
  */
-
 declare(strict_types=1);
 
+use const PS_DYNAMIC_ADMIN_PANEL_UPLOAD_DIR;
+
 // phpcs:disable
-/**
- * If this file is called directly, then abort execution.
- */
 if (!defined('_PS_VERSION_')) {
     exit;
 }
@@ -51,47 +48,51 @@ class AdminDynamicPanelController extends ModuleAdminController
      *
      * @return void
      */
-    public function displayAjaxDeleteMedia()
+    public function displayAjaxDeleteMedia(): void
     {
         $body = Tools::getValue('body');
         $name = $body['name'] ?? '';
-        $idLang = (int) $body['lang'] ?? 0;
+        $idLang = (int) $body['lang'];
 
         if (!$name || !$idLang) {
-            return $this->ajaxRenderJson([
+            $this->ajaxRenderJson([
                 'success' => false,
                 'message' => 'Missing required parameters.',
             ]);
+            exit;
         }
 
         $filename = Configuration::get($name, $idLang);
 
         if (!$filename) {
-            return $this->ajaxRenderJson([
+            $this->ajaxRenderJson([
                 'success' => false,
                 'message' => 'No media registered for this field and language.',
             ]);
+            exit;
         }
 
         $mediaPath = PS_DYNAMIC_ADMIN_PANEL_UPLOAD_DIR . $filename;
 
         if (!file_exists($mediaPath)) {
-            return $this->ajaxRenderJson([
+            $this->ajaxRenderJson([
                 'success' => false,
                 'message' => 'Media file not found on server.',
             ]);
+            exit;
         }
 
         if (!@unlink($mediaPath)) {
-            return $this->ajaxRenderJson([
+            $this->ajaxRenderJson([
                 'success' => false,
                 'message' => 'Unable to delete the media file.',
             ]);
+            exit;
         }
 
         Configuration::updateValue($name, [$idLang => '']);
 
-        return $this->ajaxRenderJson([
+        $this->ajaxRenderJson([
             'success' => true,
             'message' => 'Media deleted successfully.',
         ]);
@@ -100,9 +101,11 @@ class AdminDynamicPanelController extends ModuleAdminController
     /**
      * Renders a JSON response.
      *
-     * @param mixed $content The content to be rendered as JSON.
+     * @param mixed $content
+     *
+     * @return void
      */
-    private function ajaxRenderJson($content)
+    private function ajaxRenderJson($content): void
     {
         header('Content-Type: application/json');
         $this->ajaxRender(json_encode($content));

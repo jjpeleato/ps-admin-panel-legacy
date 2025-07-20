@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Copyright since 2007 PrestaShop SA and Contributors
  * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
@@ -18,26 +17,25 @@
  * @copyright Since 2007 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/AFL-3.0 Academic Free License version 3.0
  */
-
 declare(strict_types=1);
 
 namespace PrestaShop\Module\PsDynamicAdminPanel\Native\Classes;
-
-// phpcs:disable
-/**
- * If this file is called directly, then abort execution.
- */
-if (!defined('_PS_VERSION_')) {
-    exit;
-}
-// phpcs:enable
 
 use AdminController;
 use Configuration;
 use Context;
 use HelperForm;
 use Module;
+use PrestaShopBundle\Translation\TranslatorComponent as Translator;
 use Tools;
+
+use const PS_DYNAMIC_ADMIN_PANEL_UPLOAD_DIR;
+
+// phpcs:disable
+if (!defined('_PS_VERSION_')) {
+    exit;
+}
+// phpcs:enable
 
 /**
  * Class HelperFormExtended
@@ -47,19 +45,19 @@ use Tools;
  */
 class HelperFormExtended
 {
-    /** @var Translator $translator */
+    /** @var Translator */
     private $translator;
 
-    /** @var array $languages */
+    /** @var array */
     private array $languages = [];
 
-    /** @var array $fields */
+    /** @var array */
     private array $fields = [];
 
-    /** @var ImageHandler $imageHandler */
+    /** @var ImageHandler */
     private ImageHandler $imageHandler;
 
-    /** @var VideoHandler $videoHandler */
+    /** @var VideoHandler */
     private VideoHandler $videoHandler;
 
     /**
@@ -94,7 +92,6 @@ class HelperFormExtended
      * @param string $name
      * @param string $identifier
      * @param string $pathUri
-     *
      * @return string
      */
     public function renderForm(
@@ -145,7 +142,7 @@ class HelperFormExtended
                 'tinymce' => true,
                 'legend' => [
                     'title' => $this->translator->trans('Settings', [], 'Modules.Psdynamicadminpanel.Admin'),
-                    'icon' => 'icon-cogs'
+                    'icon' => 'icon-cogs',
                 ],
                 'submit' => [
                     'title' => $this->translator->trans('Save', [], 'Modules.Psdynamicadminpanel.Admin'),
@@ -185,7 +182,7 @@ class HelperFormExtended
                         'id' => $field['machine_name'] . '_off',
                         'value' => 0,
                         'label' => $this->translator->trans('Disabled', [], 'Modules.Psdynamicadminpanel.Admin'),
-                    ]
+                    ],
                 ];
             }
 
@@ -265,7 +262,6 @@ class HelperFormExtended
      *
      * @param string $key
      * @param array $field
-     *
      * @return array
      */
     private function processMultiLanguageField(string $key = '', array $field = []): array
@@ -296,7 +292,7 @@ class HelperFormExtended
                         'The "%field%" field for language "%lang%" is required.',
                         [
                             '%field%' => $field['label'],
-                            '%lang%' => $localeLang
+                            '%lang%' => $localeLang,
                         ],
                         'Modules.Psdynamicadminpanel.Admin'
                     );
@@ -310,7 +306,7 @@ class HelperFormExtended
                 $errors[] = $this->translator->trans(
                     'Failed to update configuration for key "%key%".',
                     [
-                        '%key%' => $key
+                        '%key%' => $key,
                     ],
                     'Modules.Psdynamicadminpanel.Admin'
                 );
@@ -325,7 +321,6 @@ class HelperFormExtended
      *
      * @param string $key
      * @param array $field
-     *
      * @return array
      */
     private function processSingleLanguageField(string $key = '', array $field = []): array
@@ -337,10 +332,10 @@ class HelperFormExtended
                 $this->translator->trans(
                     'The "%field%" field is required.',
                     [
-                        '%field%' => $field['label']
+                        '%field%' => $field['label'],
                     ],
                     'Modules.Psdynamicadminpanel.Admin'
-                )
+                ),
             ];
         }
 
@@ -349,7 +344,7 @@ class HelperFormExtended
                 $this->translator->trans(
                     'Failed to update configuration for key "%key%".',
                     [
-                        '%key%' => $key
+                        '%key%' => $key,
                     ],
                     'Modules.Psdynamicadminpanel.Admin'
                 )

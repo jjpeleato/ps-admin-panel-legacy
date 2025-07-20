@@ -2,7 +2,7 @@
 
 This module facilitates the creation and management of custom administration panels within PrestaShop’s back office. It automatically generates configuration forms based on the `settings.php` file, incorporating various types of fields such as text, HTML, switches, images, and videos.
 
-![Dynamic admin panel view](assets-dashboard.png)
+![Dynamic admin panel view](./views/img/assets-dashboard.png)
 
 ### The problem
 
@@ -24,8 +24,6 @@ In addition, it is specifically designed to support frontend teams, enabling the
 
 - **PrestaShop version**: 1.7.6.0 to 8.2.1
 - **PHP version**: Compatible with the PHP version required by your PrestaShop installation.
-
-**Note:** The module is very likely to be compatible with versions beyond PrestaShop v9.0.0. You can use it without any issues, and if you encounter any incompatibility with a specific version, feel free to let me know.
 
 ### Requirements to develop
 
@@ -77,6 +75,21 @@ The `settings.php` file is the core of the module's configuration. It is used to
 Currently, the module supports five field types: `switch`, `text`, `html`, `video` and `image`. To add, modify, or remove fields in the admin panel, you need to use the constant `PS_DYNAMIC_ADMIN_PANEL_FIELDS`.
 
 As a reference, you can check the `settings.php` file, which includes a complete example with all available configuration options for the fields.
+
+```php
+const PS_DYNAMIC_ADMIN_PANEL_FIELDS = [
+    'PS_DYNAMIC_ADMIN_PANEL_DISPLAY' => [
+        'machine_name' => 'display', // Unique identifier for the field. Used as a variable in the FO.
+        'tab' => 'general', // Tab where the field will be displayed in the BO.
+        'type' => 'switch', // Type of field (switch, text, html, video, image).
+        'lang' => false, // Indicates if the field is language-specific.
+        'required' => false, // Indicates if the field is required.
+        'label' => 'Display', // Label for the field.
+        'desc' => 'Show or hide the section.', // Description of the field.
+        'value' => 0, // Default value for the field.
+    ],
+];
+```
 
 ### Usage the module
 
@@ -177,7 +190,7 @@ This project utilizes various technologies and tools for automation and the deve
 
 ## Contributing
 
-Contributions are welcome! Please follow the coding standards defined in `phpcs.xml` and ensure all changes are tested before submitting a pull request.
+Contributions are welcome! Please follow the coding standards defined in `phpcs.xml` and ensure all changes are tested before submitting a pull request. Use the https://validator.prestashop.com/ tool for your commits, and ensure that your code passes the PrestaShop coding standards.
 
 ## Support
 
@@ -185,7 +198,7 @@ For issues or feature requests, please open an issue in the repository or contac
 
 ## Acknowledgments
 
-If you find this module useful, feel free to leave a star as a sign of support. You're also welcome to share your feedback in the PrestaShop forums—both in the [Spanish-speaking](https://www.prestashop.com/forums/topic/1100217-m%C3%B3dulo-gratuito-crea-paneles-de-administraci%C3%B3n-de-forma-din%C3%A1mica-en-prestashop/) thread and the one for the [English-speaking](https://www.prestashop.com/forums/topic/1100219-free-module-create-dynamic-admin-panels-in-prestashop/) community, where I’ve shared the module. Your opinion is always appreciated!
+If you find this module useful, feel free to leave a star as a sign of support. You're also welcome to share your feedback in the PrestaShop forums—both in the [Spanish-speaking](https://www.prestashop.com/forums/topic/1100262-m%C3%B3dulo-gratuito-crea-paneles-de-administraci%C3%B3n-din%C3%A1micos-en-prestashop-1760-hasta-821/) thread and the one for the [English-speaking](https://www.prestashop.com/forums/topic/1100261-free-module-create-dynamic-admin-panels-in-prestashop-from-1760-to-821/) community, where I’ve shared the module. Your opinion is always appreciated!
 
 ## Finally
 

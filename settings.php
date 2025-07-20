@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Copyright since 2007 PrestaShop SA and Contributors
  * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
@@ -18,16 +17,14 @@
  * @copyright Since 2007 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/AFL-3.0 Academic Free License version 3.0
  */
-
 declare(strict_types=1);
 
-/** @var string PS_DYNAMIC_ADMIN_PANEL_UPLOAD_DIR */
 define('PS_DYNAMIC_ADMIN_PANEL_UPLOAD_DIR', dirname(__FILE__) . DIRECTORY_SEPARATOR . 'upload' . DIRECTORY_SEPARATOR);
 
-/** @var string PS_DYNAMIC_ADMIN_PANEL_NAME */
+/** @var string */
 const PS_DYNAMIC_ADMIN_PANEL_NAME = 'AdminDynamicPanel';
 
-/** @var array PS_DYNAMIC_ADMIN_PANEL_FIELDS */
+/** @var array */
 const PS_DYNAMIC_ADMIN_PANEL_FIELDS = [
     'PS_DYNAMIC_ADMIN_PANEL_DISPLAY' => [
         'machine_name' => 'display',

@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Copyright since 2007 PrestaShop SA and Contributors
  * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
@@ -18,21 +17,18 @@
  * @copyright Since 2007 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/AFL-3.0 Academic Free License version 3.0
  */
-
 declare(strict_types=1);
 
 namespace PrestaShop\Module\PsDynamicAdminPanel\Helper\Includes;
 
+use Context;
+use PrestaShopBundle\Translation\TranslatorComponent as Translator;
+
 // phpcs:disable
-/**
- * If this file is called directly, then abort execution.
- */
 if (!defined('_PS_VERSION_')) {
     exit;
 }
 // phpcs:enable
-
-use Context;
 
 /**
  * Class SettingsValidator
@@ -41,10 +37,13 @@ use Context;
  */
 class SettingsValidator
 {
-    /** @var Translator $translator */
+    /** @var Context */
+    protected $context;
+
+    /** @var Translator */
     protected $translator;
 
-    /** @var array $fields */
+    /** @var array */
     private array $fields = [];
 
     /**
@@ -54,7 +53,8 @@ class SettingsValidator
      */
     public function __construct(array $fields = [])
     {
-        $this->translator = Context::getContext()->getTranslator();
+        $this->context = Context::getContext();
+        $this->translator = $this->context->getTranslator();
         $this->fields = $fields;
     }
 
@@ -91,7 +91,7 @@ class SettingsValidator
                 $errors[] = $this->translator->trans(
                     'The key "%key%" must be uppercase.',
                     [
-                        '%key%' => $key
+                        '%key%' => $key,
                     ],
                     'Modules.Psdynamicadminpanel.Admin'
                 );
@@ -99,7 +99,16 @@ class SettingsValidator
         }
 
         // Validate if all required keys are present.
-        $requiredKeys = ['machine_name', 'tab', 'type', 'lang', 'required', 'label', 'desc', 'value'];
+        $requiredKeys = [
+            'machine_name',
+            'tab',
+            'type',
+            'lang',
+            'required',
+            'label',
+            'desc',
+            'value',
+        ];
         foreach ($this->fields as $key => $field) {
             foreach ($requiredKeys as $requiredKey) {
                 if (!array_key_exists($requiredKey, $field)) {
@@ -107,7 +116,7 @@ class SettingsValidator
                         'The key "%key%" is required in the field "%field%".',
                         [
                             '%key%' => $requiredKey,
-                            '%field%' => $key
+                            '%field%' => $key,
                         ],
                         'Modules.Psdynamicadminpanel.Admin'
                     );
@@ -116,7 +125,13 @@ class SettingsValidator
         }
 
         // Validate if the type is valid.
-        $validTypes = ['switch', 'text', 'html', 'video', 'image'];
+        $validTypes = [
+            'switch',
+            'text',
+            'html',
+            'video',
+            'image',
+        ];
         foreach ($this->fields as $key => $field) {
             if (!in_array($field['type'], $validTypes, true)) {
                 $errors[] = $this->translator->trans(
@@ -124,7 +139,7 @@ class SettingsValidator
                     [
                         '%type%' => $field['type'],
                         '%field%' => $key,
-                        '%validTypes%' => implode(', ', $validTypes)
+                        '%validTypes%' => implode(', ', $validTypes),
                     ],
                     'Modules.Psdynamicadminpanel.Admin'
                 );
@@ -139,7 +154,7 @@ class SettingsValidator
                     'The field "%field%" of type "%type%" must be a lang field.',
                     [
                         '%field%' => $key,
-                        '%type%' => $field['type']
+                        '%type%' => $field['type'],
                     ],
                     'Modules.Psdynamicadminpanel.Admin'
                 );
