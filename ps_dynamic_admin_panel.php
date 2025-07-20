@@ -1,17 +1,21 @@
 <?php
-
 /**
- * Ps_Dynamic_Admin_Panel
+ * Copyright since 2007 PrestaShop SA and Contributors
+ * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
  *
- * This module adds an admin panel to the back office, allowing easy configuration of different types of fields.
+ * NOTICE OF LICENSE
  *
- * @author    @jjpeleato
- * @link      https://www.jjpeleato.com/
- * @license   GPL-3.0-only https://opensource.org/license/gpl-3-0/
- * @version   0.1.0
- * @since     0.1.0
- * @see       https://devdocs.prestashop-project.org/1.7/modules/creation/adding-configuration-page/
- * @see       https://devdocs.prestashop-project.org/8/modules/creation/adding-configuration-page/
+ * This source file is subject to the Academic Free License version 3.0
+ * that is bundled with this package in the file LICENSE.md.
+ * It is also available through the world-wide-web at this URL:
+ * https://opensource.org/licenses/AFL-3.0
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to license@prestashop.com so we can send you a copy immediately.
+ *
+ * @author    PrestaShop SA and Contributors <contact@prestashop.com>
+ * @copyright Since 2007 PrestaShop SA and Contributors
+ * @license   https://opensource.org/licenses/AFL-3.0 Academic Free License version 3.0
  */
 
 declare(strict_types=1);
@@ -37,10 +41,17 @@ use PrestaShop\Module\PsDynamicAdminPanel\Native\Classes\Uninstaller;
 use PrestaShop\PrestaShop\Core\Module\WidgetInterface;
 
 /**
- * Class Ps_Dynamic_Admin_Panel
+ * Ps_Dynamic_Admin_Panel
  *
- * @since 0.1.0
- * @author @jjpeleato
+ * This module adds an admin panel to the back office, allowing easy configuration of different types of fields.
+ *
+ * @author    @jjpeleato
+ * @link      https://www.jjpeleato.com/
+ * @license   GPL-3.0-only https://opensource.org/license/gpl-3-0/
+ * @version   0.1.0
+ * @since     0.1.0
+ * @see       https://devdocs.prestashop-project.org/1.7/modules/creation/adding-configuration-page/
+ * @see       https://devdocs.prestashop-project.org/8/modules/creation/adding-configuration-page/
  */
 //phpcs:ignore
 class Ps_Dynamic_Admin_Panel extends Module implements WidgetInterface
@@ -82,7 +93,7 @@ class Ps_Dynamic_Admin_Panel extends Module implements WidgetInterface
         $this->need_instance = 0;
         $this->ps_versions_compliancy = [
             'min' => '1.7.6.0',
-            'max' => '8.2.1'
+            'max' => '8.99.99',
         ];
         $this->bootstrap = true;
         $this->displayName = $this->trans('PrestaShop: Dynamic Admin Panel', [], 'Modules.Psdynamicadminpanel.Admin');
@@ -175,6 +186,20 @@ class Ps_Dynamic_Admin_Panel extends Module implements WidgetInterface
     }
 
     /**
+     * This method is used to add JavaScript definitions to the page.
+     * It is called when the module is displayed in the back office.
+     *
+     * @return void
+     */
+    private function addJsDefList()
+    {
+        Media::addJsDef([
+            'psapl_controller_delete_url' => $this->context->link->getAdminLink(PS_DYNAMIC_ADMIN_PANEL_NAME),
+            'psapl_controller_delete' => PS_DYNAMIC_ADMIN_PANEL_NAME,
+        ]);
+    }
+
+    /**
      * This method is used to get the content of the module.
      * It is called when the module is displayed in the back office.
      *
@@ -236,20 +261,6 @@ class Ps_Dynamic_Admin_Panel extends Module implements WidgetInterface
     }
 
     /**
-     * This method is used to add JavaScript definitions to the page.
-     * It is called when the module is displayed in the back office.
-     *
-     * @return void
-     */
-    private function addJsDefList()
-    {
-        Media::addJsDef([
-            'psapl_controller_delete_url' => $this->context->link->getAdminLink(PS_DYNAMIC_ADMIN_PANEL_NAME),
-            'psapl_controller_delete' => PS_DYNAMIC_ADMIN_PANEL_NAME,
-        ]);
-    }
-
-    /**
      * Implement the renderWidget method.
      *
      * This method is used to render the widget.
@@ -270,7 +281,7 @@ class Ps_Dynamic_Admin_Panel extends Module implements WidgetInterface
         $this->smarty->assign([
             'path' => $this->_path,
         ]);
-        return $this->fetch('module:' . $this->name . '/views/templates/widget/index.tpl');
+        return $this->fetch('module:' . $this->name . '/views/templates/front/index.tpl');
     }
 
     /**
@@ -289,13 +300,7 @@ class Ps_Dynamic_Admin_Panel extends Module implements WidgetInterface
         $idLang = $this->context->language->id;
 
         foreach ($this->fields as $key => $field) {
-            if ($field['lang'] === false) {
-                // If the field is not multilingual, get the value directly.
-                $variables[$field['machine_name']] = Configuration::get($key, null);
-                continue;
-            }
-
-            $variables[$field['machine_name']] = Configuration::get($key, $idLang);
+            $variables[$field['machine_name']] = Configuration::get($key, $field['lang'] ? $idLang : null);
         }
 
         return $variables;

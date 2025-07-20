@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Copyright since 2007 PrestaShop SA and Contributors
  * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
@@ -37,6 +36,7 @@ use Configuration;
 use Context;
 use HelperForm;
 use Module;
+use PrestaShopBundle\Translation\TranslatorComponent as Translator;
 use Tools;
 
 /**

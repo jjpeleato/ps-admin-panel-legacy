@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Copyright since 2007 PrestaShop SA and Contributors
  * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
@@ -55,7 +54,7 @@ class AdminDynamicPanelController extends ModuleAdminController
     {
         $body = Tools::getValue('body');
         $name = $body['name'] ?? '';
-        $idLang = (int) $body['lang'] ?? 0;
+        $idLang = (int) $body['lang'];
 
         if (!$name || !$idLang) {
             return $this->ajaxRenderJson([
@@ -102,7 +101,7 @@ class AdminDynamicPanelController extends ModuleAdminController
      *
      * @param mixed $content The content to be rendered as JSON.
      */
-    private function ajaxRenderJson($content)
+    private function ajaxRenderJson($content): void
     {
         header('Content-Type: application/json');
         $this->ajaxRender(json_encode($content));

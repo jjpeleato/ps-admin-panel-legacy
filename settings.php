@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Copyright since 2007 PrestaShop SA and Contributors
  * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
@@ -20,6 +19,15 @@
  */
 
 declare(strict_types=1);
+
+// phpcs:disable
+/**
+ * If this file is called directly, then abort execution.
+ */
+if (!defined('_PS_VERSION_')) {
+    exit;
+}
+// phpcs:enable
 
 /** @var string PS_DYNAMIC_ADMIN_PANEL_UPLOAD_DIR */
 define('PS_DYNAMIC_ADMIN_PANEL_UPLOAD_DIR', dirname(__FILE__) . DIRECTORY_SEPARATOR . 'upload' . DIRECTORY_SEPARATOR);
