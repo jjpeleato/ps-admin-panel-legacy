@@ -19,12 +19,6 @@
  */
 declare(strict_types=1);
 
-// phpcs:disable
-if (!defined('_PS_VERSION_')) {
-    exit;
-}
-// phpcs:enable
-
 namespace PrestaShop\Module\PsDynamicAdminPanel\Native\Classes;
 
 use Configuration;
@@ -32,6 +26,12 @@ use Context;
 use ImageManager;
 use PrestaShopBundle\Translation\TranslatorComponent as Translator;
 use Shop;
+
+// phpcs:disable
+if (!defined('_PS_VERSION_')) {
+    exit;
+}
+// phpcs:enable
 
 /**
  * Abstract class MediaHandler

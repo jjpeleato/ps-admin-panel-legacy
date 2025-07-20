@@ -19,12 +19,6 @@
  */
 declare(strict_types=1);
 
-// phpcs:disable
-if (!defined('_PS_VERSION_')) {
-    exit;
-}
-// phpcs:enable
-
 namespace PrestaShop\Module\PsDynamicAdminPanel\Native\Classes;
 
 use AdminController;
@@ -34,6 +28,12 @@ use HelperForm;
 use Module;
 use PrestaShopBundle\Translation\TranslatorComponent as Translator;
 use Tools;
+
+// phpcs:disable
+if (!defined('_PS_VERSION_')) {
+    exit;
+}
+// phpcs:enable
 
 /**
  * Class HelperFormExtended
