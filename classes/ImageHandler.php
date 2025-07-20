@@ -17,15 +17,11 @@
  * @copyright Since 2007 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/AFL-3.0 Academic Free License version 3.0
  */
-
 declare(strict_types=1);
 
 namespace PrestaShop\Module\PsDynamicAdminPanel\Native\Classes;
 
 // phpcs:disable
-/**
- * If this file is called directly, then abort execution.
- */
 if (!defined('_PS_VERSION_')) {
     exit;
 }
@@ -51,7 +47,7 @@ class ImageHandler extends MediaHandler
      * This constructor initializes the allowed image extensions.
      * It is called when an instance of the class is created.
      *
-     * @param string $path The path where images will be uploaded.
+     * @param string $path
      */
     public function __construct(string $path = '')
     {

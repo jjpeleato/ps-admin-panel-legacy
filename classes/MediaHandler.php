@@ -17,7 +17,6 @@
  * @copyright Since 2007 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/AFL-3.0 Academic Free License version 3.0
  */
-
 declare(strict_types=1);
 
 namespace PrestaShop\Module\PsDynamicAdminPanel\Native\Classes;
@@ -29,9 +28,6 @@ use PrestaShopBundle\Translation\TranslatorComponent as Translator;
 use Shop;
 
 // phpcs:disable
-/**
- * If this file is called directly, then abort execution.
- */
 if (!defined('_PS_VERSION_')) {
     exit;
 }
@@ -73,9 +69,9 @@ abstract class MediaHandler
     /**
      * Uploads media to the configured directory.
      *
-     * @param array $files The file data array (e.g., $_FILES['field']).
-     * @param string $key The configuration key for the media.
-     * @param int $lang The language ID for the configuration.
+     * @param array $files
+     * @param string $key
+     * @param int $lang
      * @return array {
      *     @type bool   $success  True if upload succeeded, false otherwise.
      *     @type string $filename The sanitized file name.
@@ -153,10 +149,10 @@ abstract class MediaHandler
     /**
      * Deletes a specific media file.
      *
-     * @param string $key The configuration key for the media.
-     * @param int $lang The language ID for the configuration.
-     * @param string $filename The name of the file to delete.
-     * @return bool True if the file was deleted, false otherwise.
+     * @param string $key
+     * @param int $lang
+     * @param string $filename
+     * @return bool true if the file was deleted, false otherwise.
      */
     protected function deleteMedia(string $key = '', int $lang = 0, string $filename = ''): bool
     {

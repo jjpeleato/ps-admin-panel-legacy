@@ -21,7 +21,7 @@
     <div class="row">
       <div class="col-12">
         {if empty($title) === false}
-          <h3>{$title|escape:'UTF-8'}</h3>
+          <h3>{$title|escape}</h3>
         {/if}
         {if empty($short_description) === false}
           <div class="description">
@@ -35,13 +35,13 @@
         {/if}
         {if empty($image) === false}
           <div class="image">
-            <img src="{$path|escape:'UTF-8'}/upload/{$image|escape:'UTF-8'}" alt="{$image_alt|escape:'UTF-8'}" title="{$image_alt|escape:'UTF-8'}" width="400" />
+            <img src="{$path|escape}/upload/{$image|escape}" alt="{$image_alt|escape}" title="{$image_alt|escape}" width="400" />
           </div>
         {/if}
         {if empty($video) === false}
           <div class="video">
             <video controls width="400">
-              <source src="{$path|escape:'UTF-8'}/upload/{$video|escape:'UTF-8'}">
+              <source src="{$path|escape}/upload/{$video|escape}">
               {l s='Your browser does not support the video tag.' d='Admin.Actions'}
             </video>
           </div>

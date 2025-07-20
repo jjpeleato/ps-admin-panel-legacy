@@ -17,15 +17,11 @@
  * @copyright Since 2007 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/AFL-3.0 Academic Free License version 3.0
  */
-
 declare(strict_types=1);
 
 namespace PrestaShop\Module\PsDynamicAdminPanel\Native\Classes;
 
 // phpcs:disable
-/**
- * If this file is called directly, then abort execution.
- */
 if (!defined('_PS_VERSION_')) {
     exit;
 }
@@ -47,7 +43,7 @@ class TabInstaller
     /**
      * TabInstaller constructor.
      *
-     * @param string $name The name of the tab to be installed.
+     * @param string $name
      */
     public function __construct(string $name = '')
     {
