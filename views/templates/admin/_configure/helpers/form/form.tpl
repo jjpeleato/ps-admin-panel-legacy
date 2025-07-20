@@ -24,15 +24,15 @@
       <div class="form-group">
         {foreach from=$languages item=language}
           {if $languages|count > 1}
-            <div class="translatable-field lang-{$language.id_lang|escape}" {if $language.id_lang != $defaultFormLanguage}style="display: none;"{/if}>
+            <div class="translatable-field lang-{$language.id_lang|escape:'htmlall':'UTF-8'}" {if $language.id_lang != $defaultFormLanguage}style="display: none;"{/if}>
           {/if}
             <div class="col-lg-{if $languages|count > 1}10{else}12{/if}">
               <div class="dummyfile input-group">
-                <input class="hide-file-upload js-attachment" name="{$input.name|escape}_{$language.id_lang|escape}" data-name="{$input.name|escape}" data-lang="{$language.id_lang|escape}" type="file" />
+                <input class="hide-file-upload js-attachment" name="{$input.name|escape:'htmlall':'UTF-8'}_{$language.id_lang|escape:'htmlall':'UTF-8'}" data-name="{$input.name|escape:'htmlall':'UTF-8'}" data-lang="{$language.id_lang|escape:'htmlall':'UTF-8'}" type="file" />
                 <span class="input-group-addon"><i class="icon-file"></i></span>
-                <input class="disabled js-attachment-name" name="filename" data-name="{$input.name|escape}" data-lang="{$language.id_lang|escape}" type="text" readonly />
+                <input class="disabled js-attachment-name" name="filename" data-name="{$input.name|escape:'htmlall':'UTF-8'}" data-lang="{$language.id_lang|escape:'htmlall':'UTF-8'}" type="text" readonly />
                 <span class="input-group-btn">
-                  <button class="btn btn-default js-attachment-add" name="submitAddAttachments" data-name="{$input.name|escape}" data-lang="{$language.id_lang|escape}" type="button">
+                  <button class="btn btn-default js-attachment-add" name="submitAddAttachments" data-name="{$input.name|escape:'htmlall':'UTF-8'}" data-lang="{$language.id_lang|escape:'htmlall':'UTF-8'}" type="button">
                     <i class="icon-folder-open"></i> {l s='Choose a file' d='Admin.Actions'}
                   </button>
                 </span>
@@ -41,29 +41,29 @@
             {if $languages|count > 1}
               <div class="col-lg-2">
                 <button class="btn btn-default dropdown-toggle" data-toggle="dropdown" type="button" tabindex="-1">
-                  {$language.iso_code|escape}
+                  {$language.iso_code|escape:'htmlall':'UTF-8'}
                   <span class="caret"></span>
                 </button>
                 <ul class="dropdown-menu">
                   {foreach from=$languages item=lang}
-                    <li><a href="javascript:hideOtherLanguage({$lang.id_lang|escape});" tabindex="-1">{$lang.name|escape}</a></li>
+                    <li><a href="javascript:hideOtherLanguage({$lang.id_lang|escape:'htmlall':'UTF-8'});" tabindex="-1">{$lang.name|escape:'htmlall':'UTF-8'}</a></li>
                   {/foreach}
                 </ul>
               </div>
             {/if}
             {if isset($fields_value[$input.name][$language.id_lang]) && $fields_value[$input.name][$language.id_lang] != ''}
-              <div class="col-lg-12 js-media" data-name="{$input.name|escape}" data-lang="{$language.id_lang|escape}" style="margin-top: 10px;">
+              <div class="col-lg-12 js-media" data-name="{$input.name|escape:'htmlall':'UTF-8'}" data-lang="{$language.id_lang|escape:'htmlall':'UTF-8'}" style="margin-top: 10px;">
                 {if $input.type === 'video_lang'}
                   <video controls class="embed-responsive" width="400">
-                    <source src="{$uri|escape}upload/{$fields_value[$input.name][$language.id_lang]|escape}">
+                    <source src="{$uri|escape:'htmlall':'UTF-8'}upload/{$fields_value[$input.name][$language.id_lang]|escape:'htmlall':'UTF-8'}">
                     {l s='Your browser does not support the video tag.' d='Admin.Actions'}
                   </video>
                 {else}
-                  <img src="{$uri|escape}upload/{$fields_value[$input.name][$language.id_lang]|escape}" class="img-thumbnail" width="200" />
+                  <img src="{$uri|escape:'htmlall':'UTF-8'}upload/{$fields_value[$input.name][$language.id_lang]|escape:'htmlall':'UTF-8'}" class="img-thumbnail" width="200" />
                 {/if}
               </div>
-              <div class="col-lg-12 js-media-actions" data-name="{$input.name|escape}" data-lang="{$language.id_lang|escape}" style="margin-top: 5px;">
-                <button class="btn btn-danger js-media-delete" name="submitDeleteAttachments" data-name="{$input.name|escape}" data-lang="{$language.id_lang|escape}" type="button">
+              <div class="col-lg-12 js-media-actions" data-name="{$input.name|escape:'htmlall':'UTF-8'}" data-lang="{$language.id_lang|escape:'htmlall':'UTF-8'}" style="margin-top: 5px;">
+                <button class="btn btn-danger js-media-delete" name="submitDeleteAttachments" data-name="{$input.name|escape:'htmlall':'UTF-8'}" data-lang="{$language.id_lang|escape:'htmlall':'UTF-8'}" type="button">
                   <i class="icon-trash"></i> {l s='Delete a file' d='Admin.Actions'}
                 </button>
               </div>
