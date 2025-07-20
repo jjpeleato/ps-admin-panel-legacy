@@ -28,13 +28,14 @@ if (file_exists(__DIR__ . '/vendor/autoload.php') === true) {
 }
 // phpcs:enable
 
-use const PS_DYNAMIC_ADMIN_PANEL_NAME;
 use PrestaShop\Module\PsDynamicAdminPanel\Helper\Includes\SettingsValidator;
 use PrestaShop\Module\PsDynamicAdminPanel\Native\Classes\HelperFormExtended;
 use PrestaShop\Module\PsDynamicAdminPanel\Native\Classes\Installer;
 use PrestaShop\Module\PsDynamicAdminPanel\Native\Classes\TabInstaller;
 use PrestaShop\Module\PsDynamicAdminPanel\Native\Classes\Uninstaller;
 use PrestaShop\PrestaShop\Core\Module\WidgetInterface;
+
+use const PS_DYNAMIC_ADMIN_PANEL_NAME;
 
 /**
  * Ps_Dynamic_Admin_Panel
@@ -162,7 +163,7 @@ class Ps_Dynamic_Admin_Panel extends Module implements WidgetInterface
     {
         PrestaShopLogger::addLog("Uninstalled module: $this->name", 1);
 
-        $this->_clearCache('*'); // Clear module cache
+        $this->_clearCache('*');
 
         return parent::uninstall()
             && $this->unregisterHook('actionAdminControllerSetMedia')
@@ -277,6 +278,7 @@ class Ps_Dynamic_Admin_Panel extends Module implements WidgetInterface
         $this->smarty->assign([
             'path' => $this->_path,
         ]);
+
         return $this->fetch('module:' . $this->name . '/views/templates/front/index.tpl');
     }
 
