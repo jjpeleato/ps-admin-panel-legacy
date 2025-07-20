@@ -26,12 +26,6 @@ use Tab;
 
 use const PS_DYNAMIC_ADMIN_PANEL_NAME;
 
-// phpcs:disable
-if (!defined('_PS_VERSION_')) {
-    exit;
-}
-// phpcs:enable
-
 /**
  * Class TabInstaller
  *

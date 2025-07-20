@@ -31,12 +31,6 @@ use Tools;
 
 use const PS_DYNAMIC_ADMIN_PANEL_UPLOAD_DIR;
 
-// phpcs:disable
-if (!defined('_PS_VERSION_')) {
-    exit;
-}
-// phpcs:enable
-
 /**
  * Class HelperFormExtended
  *
