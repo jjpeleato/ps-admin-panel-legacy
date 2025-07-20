@@ -19,17 +19,16 @@
  */
 declare(strict_types=1);
 
-namespace PrestaShop\Module\PsDynamicAdminPanel\Native\Classes;
-
-use Configuration;
-
-use const PS_DYNAMIC_ADMIN_PANEL_UPLOAD_DIR;
-
 // phpcs:disable
 if (!defined('_PS_VERSION_')) {
     exit;
 }
 // phpcs:enable
+
+namespace PrestaShop\Module\PsDynamicAdminPanel\Native\Classes;
+
+use Configuration;
+use const PS_DYNAMIC_ADMIN_PANEL_UPLOAD_DIR;
 
 /**
  * Class Uninstaller
