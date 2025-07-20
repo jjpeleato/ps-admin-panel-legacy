@@ -40,6 +40,9 @@
 
 	<!-- Inherit rules from PSR12 -->
 	<rule ref="PSR12"/>
+	<rule ref="PSR12.Files.FileHeader.SpacingAfterBlock">
+		<severity>0</severity>
+	</rule>
 
 	<!-- Line length rule -->
 	<rule ref="Generic.Files.LineLength">

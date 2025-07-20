@@ -140,7 +140,7 @@ class HelperFormExtended
                 'tinymce' => true,
                 'legend' => [
                     'title' => $this->translator->trans('Settings', [], 'Modules.Psdynamicadminpanel.Admin'),
-                    'icon' => 'icon-cogs'
+                    'icon' => 'icon-cogs',
                 ],
                 'submit' => [
                     'title' => $this->translator->trans('Save', [], 'Modules.Psdynamicadminpanel.Admin'),
@@ -180,7 +180,7 @@ class HelperFormExtended
                         'id' => $field['machine_name'] . '_off',
                         'value' => 0,
                         'label' => $this->translator->trans('Disabled', [], 'Modules.Psdynamicadminpanel.Admin'),
-                    ]
+                    ],
                 ];
             }
 
@@ -290,7 +290,7 @@ class HelperFormExtended
                         'The "%field%" field for language "%lang%" is required.',
                         [
                             '%field%' => $field['label'],
-                            '%lang%' => $localeLang
+                            '%lang%' => $localeLang,
                         ],
                         'Modules.Psdynamicadminpanel.Admin'
                     );
@@ -304,7 +304,7 @@ class HelperFormExtended
                 $errors[] = $this->translator->trans(
                     'Failed to update configuration for key "%key%".',
                     [
-                        '%key%' => $key
+                        '%key%' => $key,
                     ],
                     'Modules.Psdynamicadminpanel.Admin'
                 );
@@ -330,10 +330,10 @@ class HelperFormExtended
                 $this->translator->trans(
                     'The "%field%" field is required.',
                     [
-                        '%field%' => $field['label']
+                        '%field%' => $field['label'],
                     ],
                     'Modules.Psdynamicadminpanel.Admin'
-                )
+                ),
             ];
         }
 
@@ -342,7 +342,7 @@ class HelperFormExtended
                 $this->translator->trans(
                     'Failed to update configuration for key "%key%".',
                     [
-                        '%key%' => $key
+                        '%key%' => $key,
                     ],
                     'Modules.Psdynamicadminpanel.Admin'
                 )

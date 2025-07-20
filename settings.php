@@ -19,18 +19,12 @@
  */
 declare(strict_types=1);
 
-// phpcs:disable
-if (!defined('_PS_VERSION_')) {
-    exit;
-}
-// phpcs:enable
-
 define('PS_DYNAMIC_ADMIN_PANEL_UPLOAD_DIR', dirname(__FILE__) . DIRECTORY_SEPARATOR . 'upload' . DIRECTORY_SEPARATOR);
 
-/** @var string PS_DYNAMIC_ADMIN_PANEL_NAME */
+/** @var string */
 const PS_DYNAMIC_ADMIN_PANEL_NAME = 'AdminDynamicPanel';
 
-/** @var array PS_DYNAMIC_ADMIN_PANEL_FIELDS */
+/** @var array */
 const PS_DYNAMIC_ADMIN_PANEL_FIELDS = [
     'PS_DYNAMIC_ADMIN_PANEL_DISPLAY' => [
         'machine_name' => 'display',
