@@ -22,6 +22,7 @@ declare(strict_types=1);
 namespace PrestaShop\Module\PsDynamicAdminPanel\Native\Classes;
 
 use Configuration;
+use const PS_DYNAMIC_ADMIN_PANEL_UPLOAD_DIR;
 
 // phpcs:disable
 if (!defined('_PS_VERSION_')) {
@@ -67,7 +68,7 @@ class Uninstaller
     /**
      * Uninstalls the module by deleting all images and configuration fields.
      *
-     * @return bool Returns true if the uninstallation was successful, false otherwise.
+     * @return bool Returns true if the uninstallation was successful, false otherwise
      */
     public function uninstall(): bool
     {
@@ -81,7 +82,7 @@ class Uninstaller
     /**
      * Uninstalls the fixtures by deleting the specified configuration fields.
      *
-     * @return bool Returns true if all fields were successfully deleted, false otherwise.
+     * @return bool returns true if all fields were successfully deleted, false otherwise
      */
     private function uninstallFixtures(): bool
     {

@@ -23,12 +23,12 @@ declare(strict_types=1);
 if (!defined('_PS_VERSION_')) {
     exit;
 }
-
 if (file_exists(__DIR__ . '/vendor/autoload.php') === true) {
     require_once __DIR__ . '/vendor/autoload.php';
 }
 // phpcs:enable
 
+use const PS_DYNAMIC_ADMIN_PANEL_NAME;
 use PrestaShop\Module\PsDynamicAdminPanel\Helper\Includes\SettingsValidator;
 use PrestaShop\Module\PsDynamicAdminPanel\Native\Classes\HelperFormExtended;
 use PrestaShop\Module\PsDynamicAdminPanel\Native\Classes\Installer;
@@ -144,10 +144,10 @@ class Ps_Dynamic_Admin_Panel extends Module implements WidgetInterface
     {
         PrestaShopLogger::addLog("Installed module: $this->name", 1);
 
-        return parent::install() &&
-            $this->registerHook('actionAdminControllerSetMedia') &&
-            $this->tabInstaller->installTab() &&
-            $this->installer->installShopFixtures();
+        return parent::install()
+            && $this->registerHook('actionAdminControllerSetMedia')
+            && $this->tabInstaller->installTab()
+            && $this->installer->installShopFixtures();
     }
 
     /**
@@ -164,10 +164,10 @@ class Ps_Dynamic_Admin_Panel extends Module implements WidgetInterface
 
         $this->_clearCache('*'); // Clear module cache
 
-        return parent::uninstall() &&
-            $this->unregisterHook('actionAdminControllerSetMedia') &&
-            $this->tabInstaller->uninstallTab() &&
-            $this->uninstaller->uninstall();
+        return parent::uninstall()
+            && $this->unregisterHook('actionAdminControllerSetMedia')
+            && $this->tabInstaller->uninstallTab()
+            && $this->uninstaller->uninstall();
     }
 
     /**

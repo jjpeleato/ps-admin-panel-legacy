@@ -73,9 +73,9 @@ abstract class MediaHandler
      * @param string $key
      * @param int $lang
      * @return array {
-     *     @type bool   $success  True if upload succeeded, false otherwise.
-     *     @type string $filename The sanitized file name.
-     *     @type string $error    Error message if any.
+     *     @type bool   $success  true if upload succeeded, false otherwise
+     *     @type string $filename the sanitized file name
+     *     @type string $error    rrror message if any
      * }
      */
     public function uploadMedia(array $files = [], string $key = '', int $lang = 0): array
@@ -152,7 +152,7 @@ abstract class MediaHandler
      * @param string $key
      * @param int $lang
      * @param string $filename
-     * @return bool true if the file was deleted, false otherwise.
+     * @return bool true if the file was deleted, false otherwise
      */
     protected function deleteMedia(string $key = '', int $lang = 0, string $filename = ''): bool
     {

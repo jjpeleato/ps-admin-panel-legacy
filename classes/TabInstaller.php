@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Copyright since 2007 PrestaShop SA and Contributors
  * PrestaShop is an International Registered Trademark & Property of PrestaShop SA
@@ -17,12 +18,14 @@
  * @copyright Since 2007 PrestaShop SA and Contributors
  * @license   https://opensource.org/licenses/AFL-3.0 Academic Free License version 3.0
  */
+
 declare(strict_types=1);
 
 namespace PrestaShop\Module\PsDynamicAdminPanel\Native\Classes;
 
 use Language;
 use Tab;
+use const PS_DYNAMIC_ADMIN_PANEL_NAME;
 
 // phpcs:disable
 if (!defined('_PS_VERSION_')) {
@@ -54,7 +57,7 @@ class TabInstaller
      * This method is used to install the tab in the back office.
      * It is called when the module is installed.
      *
-     * @return bool Returns true if the tab was successfully installed, false otherwise.
+     * @return bool Returns true if the tab was successfully installed, false otherwise
      */
     public function installTab(): bool
     {
@@ -75,7 +78,7 @@ class TabInstaller
      * This method is used to uninstall the tab in the back office.
      * It is called when the module is uninstalled.
      *
-     * @return bool Returns true if the tab was successfully uninstalled, false otherwise.
+     * @return bool returns true if the tab was successfully uninstalled, false otherwise
      */
     public function uninstallTab(): bool
     {

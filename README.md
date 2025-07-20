@@ -190,7 +190,7 @@ This project utilizes various technologies and tools for automation and the deve
 
 ## Contributing
 
-Contributions are welcome! Please follow the coding standards defined in `phpcs.xml` and ensure all changes are tested before submitting a pull request.
+Contributions are welcome! Please follow the coding standards defined in `phpcs.xml` and ensure all changes are tested before submitting a pull request. Use the https://validator.prestashop.com/ tool for your commits, and ensure that your code passes the PrestaShop coding standards.
 
 ## Support
 
