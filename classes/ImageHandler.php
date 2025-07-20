@@ -21,6 +21,12 @@ declare(strict_types=1);
 
 namespace PrestaShop\Module\PsDynamicAdminPanel\Native\Classes;
 
+// phpcs:disable
+if (!defined('_PS_VERSION_')) {
+    exit;
+}
+// phpcs:enable
+
 /**
  * ImageHandler class for managing image uploads.
  *

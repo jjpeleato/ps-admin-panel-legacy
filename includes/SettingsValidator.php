@@ -24,6 +24,12 @@ namespace PrestaShop\Module\PsDynamicAdminPanel\Helper\Includes;
 use Context;
 use PrestaShopBundle\Translation\TranslatorComponent as Translator;
 
+// phpcs:disable
+if (!defined('_PS_VERSION_')) {
+    exit;
+}
+// phpcs:enable
+
 /**
  * Class SettingsValidator
  *

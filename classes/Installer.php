@@ -24,6 +24,12 @@ namespace PrestaShop\Module\PsDynamicAdminPanel\Native\Classes;
 use Configuration;
 use PrestaShopLogger;
 
+// phpcs:disable
+if (!defined('_PS_VERSION_')) {
+    exit;
+}
+// phpcs:enable
+
 /**
  * Class Installer
  *
